@@ -20,12 +20,16 @@ class OnSubCategory extends ProductsEvent{
 }
 
 class OnProductType extends ProductsEvent{
+  String id;
+  OnProductType(this.id);
   @override
   // TODO: implement props
   List<Object> get props => null;
 }
 
-class Products extends ProductsEvent{
+class OnProducts extends ProductsEvent{
+  String id;
+  OnProducts(this.id);
   @override
   // TODO: implement props
   List<Object> get props => null;

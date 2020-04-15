@@ -1,9 +1,13 @@
+// import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 // import 'package:shopping_junction_seller/BLOC/products_bloc/products_state.dart';
 // import 'package:shopping_junction_seller/BLOC/bloc/product_bloc.dart';
 import 'package:shopping_junction_seller/BLOC/products_bloc/products_bloc.dart';
+import 'package:shopping_junction_seller/models/productModel.dart';
+import 'package:shopping_junction_seller/screens/ProductScreens/productList.dart';
 
 class AddProduct extends StatefulWidget{
   @override
@@ -28,13 +32,45 @@ class AddProductSate extends State<AddProduct>
 
 
 
+
+  Widget build(BuildContext context){
+    return Scaffold(
+      appBar:  AppBar(title:Text("Add Product")),
+      body: BlocBuilder<ProductsBloc,ProductsState>(
+        bloc: _productsBloc,
+        builder: (context,state){
+          if(state is ProductsLoading) {
+            return Center(
+              child: Text("loading...."),
+            );
+          }
+          else if(state is LoadCateogry ){
+              return LList(state);
+          }
+
+          else if(state is LoadSubCategory){
+            return LList(state);
+          }
+
+          
+          else{
+            return Center(
+              child: Text("else "),
+            );            
+          }
+        },
+      )
+    );
+  }
+}
+
   Widget LList(state) {
   // if(state is LoadProducts)
   var content = state is LoadCateogry
       ?state.categories
       :state is LoadSubCategory
       ?state.subcategories:
-      state.type;
+      state.productType;
 
   return Container(
     padding: EdgeInsets.all(10),
@@ -51,11 +87,27 @@ class AddProductSate extends State<AddProduct>
           height: 50,
           child: InkWell(
               onTap: (){
-                state is LoadCateogry
-                ? _productsBloc.add(OnSubCategory(content[index].id)):
-                state is LoadSubCategory
-                ? _productsBloc.add(OnProductType()):
-                null;
+
+                state is LoadCateogry?
+                  Navigator.push(context, MaterialPageRoute(builder: 
+                  (_)=>SubCategoryScreen(content[index].id,content[index].name)
+                  ))
+                  :state is LoadSubCategory?
+                  Navigator.push(context, MaterialPageRoute(builder: 
+                  (_)=>TypeScreen(content[index].id,content[index].name)
+                  )):Navigator.push(context, MaterialPageRoute(builder: 
+                  (_)=>ProductScreen(content[index].id)
+                  ));
+                  
+                  
+                  
+                  
+
+                // state is LoadCateogry
+                // ? _productsBloc.add(OnSubCategory(content[index].id)):
+                // state is LoadSubCategory
+                // ? _productsBloc.add(OnProductType()):
+                // null;
               },
               child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -82,36 +134,52 @@ class AddProductSate extends State<AddProduct>
       
       )
   );
-
-
-
-
   }
 
 
+// Widget listOfContent(){
+
+// }
+
+
+
+
+
+
+
+class SubCategoryScreen extends StatefulWidget{
+  String id,name;
+  SubCategoryScreen(this.id,this.name);
+  @override
+  SubCategoryScreenState createState() => SubCategoryScreenState();
+}
+class SubCategoryScreenState extends State<SubCategoryScreen>
+{
+
+  ProductsBloc _productsBloc;
+  void initState()
+  {
+    super.initState();
+    _productsBloc = ProductsBloc();
+    _productsBloc.add(
+      OnSubCategory(this.widget.id)
+    );
+  }
+  @override
   Widget build(BuildContext context){
     return Scaffold(
-      appBar:  AppBar(title:Text("Add Product")),
+      appBar:  AppBar(title:Text(this.widget.name)),
       body: BlocBuilder<ProductsBloc,ProductsState>(
         bloc: _productsBloc,
         builder: (context,state){
-
-
           if(state is ProductsLoading) {
             return Center(
               child: Text("loading...."),
-              // child: CircularProgressIndicator(),
             );
           }
-          else if(state is LoadCateogry ){
-              return LList(state);
-          }
-
           else if(state is LoadSubCategory){
             return LList(state);
           }
-
-          
           else{
             return Center(
               child: Text("else "),
@@ -119,9 +187,61 @@ class AddProductSate extends State<AddProduct>
           }
         },
       )
-      
-      
-
+    
     );
+
+  
   }
 }
+
+
+
+
+class TypeScreen extends StatefulWidget{
+  String id,name;
+  TypeScreen(this.id,this.name);
+  @override
+  TypeScreenState createState() => TypeScreenState();
+}
+class TypeScreenState extends State<TypeScreen>
+{
+
+  ProductsBloc _productsBloc;
+  void initState()
+  {
+
+    super.initState();
+    _productsBloc = ProductsBloc();
+    _productsBloc.add(
+      OnProductType(this.widget.id)
+    );
+  }
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+      appBar:  AppBar(title:Text(this.widget.name)),
+      body: BlocBuilder<ProductsBloc,ProductsState>(
+        bloc: _productsBloc,
+        builder: (context,state){
+          if(state is ProductsLoading) {
+            return Center(
+              child: Text("loading...."),
+            );
+          }
+          else if(state is LoadTypeProduct){
+            // return Text("loadin...");
+            return LList(state);
+          }
+          else{
+            return Center(
+              child: Text("else "),
+            );            
+          }
+        },
+      )
+    
+    );
+
+  }
+}
+

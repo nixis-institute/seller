@@ -43,7 +43,7 @@ class Product{
   // List sizes;
   // List colors;
   bool isInCart;
-  List imageLink;
+  String imageLink;
   List<ProductImage> images;
   Product(this.id,this.name,this.listPrice,this.mrp,this.imageLink,{this.isInCart=false});
 }

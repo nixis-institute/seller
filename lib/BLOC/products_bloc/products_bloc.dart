@@ -28,6 +28,14 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
       yield LoadCateogry(categories: category);
       return;
     }
+    
+    if(event is OnProductType)
+    {
+      yield ProductsLoading();
+      final productType = await _fetchTypeProduct(event.id);
+      yield LoadTypeProduct(productType: productType);
+
+    }
 
     if(event is OnSubCategory)
     {
@@ -37,6 +45,17 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
       yield LoadSubCategory(subcategories: category);
       // yield LoadSubCateogry(subcategories: category);
       return;
+    }
+
+    if(event is OnProducts)
+    {
+      yield ProductsLoading();
+      print(event.id);
+      final products = await _fetcheProducts(event.id);
+      print(event.id);
+      yield LoadProducts(products: products);
+      // yield LoadSubCateogry(subcategories: category);
+      return;      
     }
   }
 
@@ -97,6 +116,70 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
       }
   }
 
+
+
+  Future<List<TypeProduct>> _fetchTypeProduct(id) async{
+      QueryResult result = await client.query(
+        QueryOptions(
+          documentNode: gql(getTypeProductQuery),
+          variables: {
+            "id":id
+          }
+        )
+      );
+
+      if(!result.hasException){
+        var data = result.data["sublistBySubcategoryId"]["edges"];
+        List<TypeProduct> category = [];
+        for(int i=0;i<data.length;i++)
+        {
+          category.add(
+            TypeProduct(
+            data[i]["node"]["id"], 
+            data[i]["node"]["name"])
+          );
+        }
+        return category;
+      }
+  }
+
+
+    Future<List<Product>> _fetcheProducts(id) async{
+      QueryResult result = await client.query(
+        QueryOptions(
+          documentNode: gql(getProductByTypeId),
+          variables: {
+            "id":id
+          }
+        )
+      );
+
+      if(!result.hasException){
+        var data = result.data["productBySublistId"]["edges"];
+        List<Product> products = [];
+        for(int i=0;i<data.length;i++)
+        {
+          print(data[i]["node"]["productimagesSet"]["edges"][0]["node"]["thumbnailImage"]);
+          products.add(
+            Product(
+              data[i]["node"]["id"], 
+              data[i]["node"]["name"], 
+              0, 
+              0, 
+              !data[i]["node"]["productimagesSet"]["edges"].isEmpty
+              ?data[i]["node"]["productimagesSet"]["edges"][0]["node"]["thumbnailImage"]:null
+              
+              // data[i]["node"]["productimagesSet"]["edges"]?data[i]["node"]["productimagesSet"]["edges"][0]["node"]["thumbnailImage"]:null,
+              )
+            );
+          //   TypeProduct(
+          //   data[i]["node"]["id"], 
+          //   data[i]["node"]["name"])
+          // );
+        }
+        return products;
+      }
+  }
 
 
 }
