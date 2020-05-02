@@ -62,7 +62,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
           for(int i=0;i<data.length;i++)
           {
             _prd.add(
-              Product(data[i]["node"]["id"], data[i]["node"]["name"], data[i]["node"]["listPrice"],data[i]["node"]["mrp"],null)
+              Product(data[i]["node"]["id"], data[i]["node"]["name"], data[i]["node"]["listPrice"],data[i]["node"]["mrp"],"9",[],[],null)
             );
           }
         }

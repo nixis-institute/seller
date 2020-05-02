@@ -1,5 +1,83 @@
-String getProductByTypeId ="""
 
+String getProductByParentId ="""
+query x(\$id:ID!){
+  productByParentId(id:\$id)
+  {
+    edges{
+      node{
+        id
+        listPrice
+        mrp
+        size
+        color
+        qty
+        productimagesSet{
+          edges{
+            node{
+              id
+              largeImage
+              normalImage
+              thumbnailImage
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+""";
+
+String uploadParentProductQuery ="""
+
+mutation x(\$id:ID!,\$prdName:String!,\$brand:String!,\$shortDesc:String!,\$longDesc:String!){
+	createParentProduct(typeId:\$id,brand:\$brand,prdName:\$prdName,shortDesc:\$shortDesc,longDesc:\$longDesc)
+  {
+    prdId
+  }
+}
+
+""";
+
+String getAllProductsQuery ="""
+{
+  allProducts{
+    edges{
+      node{
+        id
+        name
+        listPrice
+        productSize
+        sizes
+        color
+        mrp
+        instock
+        subproductSet{
+          edges{
+            node{
+              id
+              listPrice
+              size
+            }
+          }
+        }
+        productimagesSet{
+          edges{
+            node{
+              id
+              normalImage
+              thumbnailImage
+            }
+          }
+        }
+      }
+    }
+  }
+  }
+
+""";
+
+String getProductByTypeId ="""
 query x(\$id:ID!){
   productBySublistId(sublistId:\$id){
     edges{
@@ -7,6 +85,9 @@ query x(\$id:ID!){
         id
         name
         listPrice
+        productSize
+        sizes
+        color
         mrp
         subproductSet{
           edges{
@@ -41,6 +122,7 @@ query xy(\$id:ID!){
     edges {
       node {
         id
+        productSize
         name
       }
     }
@@ -58,6 +140,7 @@ query GetSubCateogry(\$CateogryId:ID!){
       node
       {
         id
+        productSize
         name
       }
     }
@@ -72,6 +155,7 @@ String getCategoryQuery = """
     edges{
       node{
         id
+        productSize
         name
         image
       }
@@ -89,6 +173,7 @@ String getProductsQuery ="""
         name
         listPrice
         mrp
+        productSize
         productimagesSet{
           edges{
             node{

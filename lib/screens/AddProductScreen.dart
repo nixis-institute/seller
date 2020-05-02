@@ -7,6 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 // import 'package:shopping_junction_seller/BLOC/bloc/product_bloc.dart';
 import 'package:shopping_junction_seller/BLOC/products_bloc/products_bloc.dart';
 import 'package:shopping_junction_seller/models/productModel.dart';
+import 'package:shopping_junction_seller/screens/ProductScreens/createProduct.dart';
 import 'package:shopping_junction_seller/screens/ProductScreens/productList.dart';
 
 class AddProduct extends StatefulWidget{
@@ -35,7 +36,7 @@ class AddProductSate extends State<AddProduct>
 
   Widget build(BuildContext context){
     return Scaffold(
-      appBar:  AppBar(title:Text("Add Product")),
+      appBar:  AppBar(title:Text("Select Product Category")),
       body: BlocBuilder<ProductsBloc,ProductsState>(
         bloc: _productsBloc,
         builder: (context,state){
@@ -96,23 +97,24 @@ class AddProductSate extends State<AddProduct>
                   Navigator.push(context, MaterialPageRoute(builder: 
                   (_)=>TypeScreen(content[index].id,content[index].name)
                   )):Navigator.push(context, MaterialPageRoute(builder: 
-                  (_)=>ProductScreen(content[index].id)
+                  (_)=>
+                  CreateProductScreen(content[index].id)
+                  // ProductScreen()
+                  
+                  
                   ));
-                  
-                  
-                  
-                  
-
-                // state is LoadCateogry
-                // ? _productsBloc.add(OnSubCategory(content[index].id)):
-                // state is LoadSubCategory
-                // ? _productsBloc.add(OnProductType()):
-                // null;
               },
               child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Text(content[index].name,style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                Row(
+                  children: <Widget>[
+                    Text(content[index].name,style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+                    SizedBox(width:20),
+                    Text("("+content[index].productSize.toString()+")",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold,color: Colors.grey),)
+                  ],
+                ),
+                
                 Row(
                   children: <Widget>[
                     // Icon(Icons),
@@ -128,8 +130,6 @@ class AddProductSate extends State<AddProduct>
             ),
           ),
         );
-
-
       }
       
       )
@@ -187,10 +187,7 @@ class SubCategoryScreenState extends State<SubCategoryScreen>
           }
         },
       )
-    
-    );
-
-  
+    );  
   }
 }
 

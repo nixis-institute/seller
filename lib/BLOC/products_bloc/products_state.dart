@@ -10,9 +10,32 @@ class ProductsLoading extends ProductsState{
     List<Category> get props => null;
 }
 
+class ParentUploadLoading extends ProductsState{
+    // final List<Category> categories=[];
+    List<Category> get props => null;
+}
+
 class ProductsInitial extends ProductsState {
     final List<Category> categories=[];
     List<Category> get props => null;
+}
+
+class ParentProductLoaded extends ProductsState{
+  final int id;
+  const ParentProductLoaded({this.id});
+  // return ParentProductLoaded(id:id);
+  
+  ParentProductLoaded copyWith({
+    int id,
+  }){
+    return ParentProductLoaded(
+      id:id??this.id,
+    );
+  }
+
+
+  @override
+  List<Object> get props =>null;
 }
 
 class LoadCateogry extends ProductsState{
@@ -90,6 +113,44 @@ class LoadProducts extends ProductsState{
     List<Product> products,
   }) {
     return LoadProducts(
+      products: products ?? this.products,
+    );
+  }
+  @override
+  List<Object> get props => [products];  
+}
+
+class LoadSubProduct extends ProductsState{
+  final List<SubProduct> products;
+
+  const LoadSubProduct({
+    this.products
+  });
+
+    LoadSubProduct copyWith({
+    List<SubProduct> products,
+  }) {
+    return LoadSubProduct(
+      products: products ?? this.products,
+    );
+  }
+  @override
+  List<Object> get props => [products];  
+}
+
+
+
+class LoadProductsWithStatus extends ProductsState{
+  final List<ProductWithStatus> products;
+
+  const LoadProductsWithStatus({
+    this.products
+  });
+
+    LoadProductsWithStatus copyWith({
+    List<ProductWithStatus> products,
+  }) {
+    return LoadProductsWithStatus(
       products: products ?? this.products,
     );
   }

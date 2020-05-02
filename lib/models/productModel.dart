@@ -2,8 +2,9 @@ class Category{
   String id;
   String name;
   String imageUrl;
+  int productSize;
   List<Slider> slider;
-  Category(this.id,this.name,this.imageUrl,{this.slider});
+  Category(this.id,this.name,this.imageUrl,this.productSize,{this.slider});
 }
 
 
@@ -17,7 +18,8 @@ class Slider{
 class ProductSubCategory{
   String id;
   String name;
-  ProductSubCategory(this.id,this.name);
+  int productSize;
+  ProductSubCategory(this.id,this.name,this.productSize);
 }
 
 // class SubCategory{
@@ -29,10 +31,15 @@ class ProductSubCategory{
 class TypeProduct{
   String id;
   String name;
-  TypeProduct(this.id,this.name);
+  int productSize;
+  TypeProduct(this.id,this.name,this.productSize);
 }
 
-
+class ProductWithStatus{
+  String status;
+  List<Product> products;
+  ProductWithStatus(this.status,this.products);
+}
 
 
 class Product{
@@ -44,8 +51,15 @@ class Product{
   // List colors;
   bool isInCart;
   String imageLink;
+  List<String> sizes;
+  List<String> colors;
   List<ProductImage> images;
-  Product(this.id,this.name,this.listPrice,this.mrp,this.imageLink,{this.isInCart=false});
+  bool inStock;
+  int qty;
+  int productSize;
+  // String endcursor;
+  // bool hasNext
+  Product(this.id,this.name,this.listPrice,this.mrp,this.imageLink,this.sizes,this.colors,this.productSize,{this.isInCart=false});
 }
 
 class SubProduct{
@@ -53,10 +67,13 @@ class SubProduct{
   String name;
   double listPrice;
   double mrp;
-  List sizes;
-  List imageLink;
+  String size;
+  String color;
+  bool inStock;
+  int qty;
+  // List imageLink;
   List<ProductImage> images;
-  SubProduct(this.id,this.name,this.listPrice,this.mrp,this.images,this.sizes,this.imageLink);  
+  SubProduct(this.id,this.name,this.listPrice,this.mrp,this.inStock,this.qty,this.images,this.size,this.color);  
 }
 
 class ProductImage{

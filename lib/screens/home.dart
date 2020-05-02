@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shopping_junction_seller/BLOC/bloc/product_bloc.dart';
 import 'package:shopping_junction_seller/screens/AddProductScreen.dart';
+import 'package:shopping_junction_seller/screens/ProductScreens/productList.dart';
 // import 'package:shopping_junction_seller/BLOC/Bloc/login_bloc.dart';
 // import 'package:shopping_junction_seller/BLOC/event/login_event.dart';
 class HomeScreen extends StatefulWidget{
@@ -48,7 +49,7 @@ class _HomeScreen extends State<HomeScreen>{
                     InkWell(
                       onTap: (){
                       Navigator.push(context, 
-                      MaterialPageRoute(builder: (_)=>AddProduct(
+                      MaterialPageRoute(builder: (_)=>ProductScreen(
                     )));
                       },
                       child: Card(
