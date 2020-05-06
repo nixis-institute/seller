@@ -21,6 +21,8 @@ class ProductScreenState extends State<ProductScreen> with TickerProviderStateMi
 
   ProductsBloc _productsBloc;
   TabController tabController;
+  List<ProductWithStatus> duplicate = [];
+  List<ProductWithStatus> all_duplicate = [];
   void initState()
   {
 
@@ -41,6 +43,31 @@ class ProductScreenState extends State<ProductScreen> with TickerProviderStateMi
   final hexCode = hexColor.replaceAll('#', '');
   return Color(int.parse('FF$hexCode', radix: 16));
 }
+// void filterSearchResult(query){
+//   List<Product> searchList= [];
+//   searchList.addAll(duplicate);
+//   if(query.empty){
+//     List<Product> listData = [];
+//     searchList.forEach((item){
+//       if(item.name.contains(query)){
+//         listData.add(item);
+//       }
+//     });
+
+//     setState(() {
+//       all_duplicate.clear();
+//       all_duplicate.addAll(listData);
+//     });
+//     return;
+//   }
+//   else{
+//     setState(() {
+//       all_duplicate.clear();
+//       all_duplicate.addAll(duplicate);
+//     });
+//   }
+
+// }
 
 
 
@@ -129,31 +156,118 @@ class ProductScreenState extends State<ProductScreen> with TickerProviderStateMi
                 body: TabBarView(
                 controller: tabController,
                 children: List.generate(state.products.length, (index){
-                  return 
-                  ListView.builder(
-                    itemCount: state.products[index].products.length,
-                    itemBuilder:(context,i){
-                      Product product =  state.products[index].products[i];
-                      return ListTile(
-                        onTap: (){
-                          Navigator.push(context, 
-                            MaterialPageRoute(builder: (_)=>SubProductScreen(
-                              product.id,product.name
-                          )));
-                        },
-                        trailing: Text(product.productSize.toString()),
-                        leading: CachedNetworkImage(
-                          height: 40,
-                          imageUrl:server_url+"/media/"+product.imageLink.toString() ),
-                        title: Text(product.name,style: TextStyle(fontWeight: FontWeight.normal),),
-                        // subtitle: Text(product.name),
-                      );
-                    }
+
+                  // setState(() {
+                  //   duplicate = state.products[index] as List<Product>;
+                  // });
+                  var _allproducts = state.products[index].products;
+                  // all_duplicate = _allproducts;
+                  // setState(() {
+                  //   duplicate = _allproducts;
+                  //   all_duplicate = _allproducts;
+                  // });
+
+                  return  Container(
+                    // color: Colors.green,
+                    alignment: Alignment.topCenter,
+                    child: 
                     
+                    Column(
+                      children: <Widget>[
+                        Container(
+                          color: Colors.white,
+                          padding: EdgeInsets.only(left:5,right:5,top:5),
+                          child: TextFormField(
+                            // focusNode: true
+                            onChanged: (value){
+                              // filterSearchResult(value);
+                            },
+
+                            autofocus: false,
+                            decoration: InputDecoration(
+                              filled: true,
+                              
+                              prefixIcon: Icon(Icons.search),
+                              contentPadding: const EdgeInsets.only(left: 1.0,top:15,),
+                              fillColor: Colors.grey[100],
+                              hintText: "Search..",
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white),
+                                borderRadius: BorderRadius.circular(25.7),
+                              ),
+
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white),
+                                borderRadius: BorderRadius.circular(25.7),
+                              ),                              
+
+                              // fillColor: Colors.accents,
+                              // border: InputBorder.none
+
+                            //   border: OutlineInputBorder(   
+                            //     // borderSide: BorderSide(width: 4,color: Colors.white),
+                            //   borderRadius: BorderRadius.all(Radius.circular(30))
+                            // )
+                            ),
+                          ),
+                        ),
+                        // Text("sdf"),
+
+
+                        Expanded(
+                                child: MediaQuery.removePadding(
+                              removeTop: true,
+                              context: context,
+                              child: 
+                              ListView.separated(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.vertical,
+                              separatorBuilder: (context, index) => Divider(
+                              indent: 55,
+                              endIndent: 0,
+                              color: Colors.grey[400],
+                              height: 0,
+                              ),
+                              itemCount: _allproducts.length,
+                              itemBuilder:(BuildContext context,int i){
+                              
+                              // setState(() {
+                              //   duplicate = state.products;
+                              // });
+                              
+                                Product product =  _allproducts[i];
+                                return 
+                                Container(
+                                  color: Colors.white,
+                                  child: ListTile(
+                                    onTap: (){
+                                      Navigator.push(context, 
+                                        MaterialPageRoute(builder: (_)=>SubProductScreen(
+                                          product.id,product.name
+                                      )));
+                                    },
+                                    trailing: Text(product.productSize.toString()),
+                                    leading: CachedNetworkImage(
+                                      height: 40,
+                                      imageUrl:server_url+"/media/"+product.imageLink.toString() ),
+                                    title: Text(product.name,style: TextStyle(fontWeight: FontWeight.normal),),
+                                    // subtitle: Text(product. ),
+                                    // subtitle: Text(product.name),
+                                  ),
+                                );
+                 
+                              }
+                              
+                              ),
+                          ),
+                        ),
+                      ],
+                    ),
+                
+                
+                
                     );
                   // Center(child: Text(state.products[index].status));
-                
-                
                 })
                 
                 ),

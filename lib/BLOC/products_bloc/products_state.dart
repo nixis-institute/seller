@@ -21,8 +21,9 @@ class ProductsInitial extends ProductsState {
 }
 
 class ParentProductLoaded extends ProductsState{
-  final int id;
-  const ParentProductLoaded({this.id});
+  final String id;
+  final String name;
+  const ParentProductLoaded({this.id,this.name});
   // return ParentProductLoaded(id:id);
   
   ParentProductLoaded copyWith({
@@ -30,6 +31,7 @@ class ParentProductLoaded extends ProductsState{
   }){
     return ParentProductLoaded(
       id:id??this.id,
+      name:name??this.name
     );
   }
 
@@ -121,14 +123,14 @@ class LoadProducts extends ProductsState{
 }
 
 class LoadSubProduct extends ProductsState{
-  final List<SubProduct> products;
+  final List<SubProductModel> products;
 
   const LoadSubProduct({
     this.products
   });
 
     LoadSubProduct copyWith({
-    List<SubProduct> products,
+    List<SubProductModel> products,
   }) {
     return LoadSubProduct(
       products: products ?? this.products,

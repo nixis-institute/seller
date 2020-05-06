@@ -41,6 +41,47 @@ class ProductWithStatus{
   ProductWithStatus(this.status,this.products);
 }
 
+// class ColorsPicker{
+//   Map code;
+//   ColorsPicker(this.code);
+// }
+// Map colorsPicker = new Map();
+
+// colorsPicker
+// ColorsPicker c = ColorsPicker(
+  
+// );
+
+dynamic sizePicker ={
+  "S":"Small",
+  "M":"Medium",
+  "L":"Large",
+  "XL":"Extra Large",
+  "XXL":"Double Large",
+};
+
+dynamic colorsPicker ={
+"#FFFFFF":"White",
+"#C0C0C0":"Silver",
+"#808080":"Gray", 
+"#000000":"Black",
+"#FF0000":"Red",
+"#800000":"Maroon",
+"#FFFF00":"Yellow",
+"#808000":"Olive",
+"#00FF00":"Lime" ,
+"#008000":"Green", 
+"#00FFFF":"Aqua",
+"#008080":"Teal",
+"#0000FF":"Blue",
+"#000080":"Navy",
+"#FF00FF":"Fuchsia",
+"#800080":"Purple",
+};
+
+
+
+
 
 class Product{
   String id;
@@ -61,6 +102,17 @@ class Product{
   // bool hasNext
   Product(this.id,this.name,this.listPrice,this.mrp,this.imageLink,this.sizes,this.colors,this.productSize,{this.isInCart=false});
 }
+
+class SubProductModel{
+  String size;
+  List<SubProduct> product;
+  SubProductModel({this.size,this.product});
+}
+
+// class SProduct{
+//   String id;
+//   String name;
+// }
 
 class SubProduct{
   String id;

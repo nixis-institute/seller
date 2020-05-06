@@ -63,12 +63,19 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
 
     if(event is OnCreateParentProduct){
       yield ParentUploadLoading();
-      final int id = await _uploadParentProduct(event.id,event.brand,event.prdName,event.sortDesc,event.longDesc);
-      print(".....");
-      yield ParentProductLoaded(id: id);
-      print("after loaded...");
+      final data = await _uploadParentProduct(event.id,event.brand,event.prdName,event.sortDesc,event.longDesc);
+      // print(".....");
+      // print(data["id"]);
+      // print(data);
+
+      yield ParentProductLoaded(id: data["id"],name:data["name"]);
+      // print("after loaded...");
       return;
     }
+
+    // if(event is UpdateSubProduct){
+    //   final data = await _updateSubProduct();
+    // }
   
   
     if(event is OnSubProducts)
@@ -145,7 +152,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
       }
   }
 
-  Future<int> _uploadParentProduct(id,brand,prdName,shortDesc,longDesc) async{
+  Future<dynamic> _uploadParentProduct(id,brand,prdName,shortDesc,longDesc) async{
     QueryResult result = await client.mutate(
       MutationOptions(
         documentNode: gql(uploadParentProductQuery),
@@ -160,7 +167,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
     );
 
     if(!result.hasException){
-      int data = result.data["createParentProduct"]["prdId"];
+      var data = result.data["createParentProduct"]["prd"];
       // print(data);
       return data;
     }
@@ -177,7 +184,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
       // print(result.exception.toString());
       if(!result.hasException)
       {
-        print("__");
+        // print("__");
         
         List<ProductWithStatus> prdWS =[];
         List data = result.data["allProducts"]["edges"];
@@ -201,7 +208,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
             // print("done")
           });
           data[i]["node"]["color"].forEach((f)=>{
-            print(f),
+            // print(f),
             color.add(f)
           });
           // data[i]["node"]["color"]
@@ -338,7 +345,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
       }
   }
 
-  Future<List<SubProduct>> _fetchSubProduct(id) async{
+  Future<List<SubProductModel>> _fetchSubProduct(id) async{
       QueryResult result = await client.query(
         QueryOptions(
           documentNode: gql(getProductByParentId),
@@ -352,6 +359,13 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
         var data = result.data["productByParentId"]["edges"];
         List<SubProduct> prd=[];
         List<ProductImage> img=[];
+        
+        List<SubProductModel> prdModelList=[];
+        // SubProductModel p = new SubProductModel();
+
+        Map e = new Map();
+        // SubProductModel
+        
         for(int i=0;i<data.length;i++)
         {
           img=[];
@@ -367,20 +381,64 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
               )
           });
 
-          prd.add(
-            SubProduct(data[i]["node"]["id"], 
-            "", 
-            data[i]["node"]["listPrice"], 
-            data[i]["node"]["mrp"],
-            data[i]["node"]["instock"], 
-            data[i]["node"]["qty"],
-            img,
-            data[i]["node"]["size"], 
-            data[i]["node"]["color"])
-          );
+          // prd.add(
+          //   SubProduct(data[i]["node"]["id"], 
+          //   "", 
+          //   data[i]["node"]["listPrice"], 
+          //   data[i]["node"]["mrp"],
+          //   data[i]["node"]["instock"], 
+          //   data[i]["node"]["qty"],
+          //   img,
+          //   data[i]["node"]["size"], 
+          //   data[i]["node"]["color"])
+          // );
+
+          if(e.containsKey(data[i]["node"]["size"]))
+          {
+            e[data[i]["node"]["size"]].add(
+              SubProduct(data[i]["node"]["id"], 
+              "", 
+              data[i]["node"]["listPrice"], 
+              data[i]["node"]["mrp"],
+              data[i]["node"]["instock"], 
+              data[i]["node"]["qty"],
+              img,
+              data[i]["node"]["size"], 
+              data[i]["node"]["color"])
+            );
+          }
+          else{
+            e[data[i]["node"]["size"]] = [
+              SubProduct(data[i]["node"]["id"], 
+              "", 
+              data[i]["node"]["listPrice"], 
+              data[i]["node"]["mrp"],
+              data[i]["node"]["instock"], 
+              data[i]["node"]["qty"],
+              img,
+              data[i]["node"]["size"], 
+              data[i]["node"]["color"])
+            ];
+          }
+
+          // if(p.size.isEmpty || p.size !=data[i]["node"]["size"])
+          // {
+          //   p.size = data[i]["node"]["size"];
+          // }
+          // else
         }
-        print(prd);
-        return prd;
+
+        e.forEach((key,value)=>{
+          prdModelList.add(
+            SubProductModel(
+              size: key,
+              product: value
+            )
+          )
+        });
+
+        // print(prdModelList[0].product);
+        return prdModelList;
       }
   }
 

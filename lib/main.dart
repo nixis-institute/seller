@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:shopping_junction_seller/Graphql/services.dart';
+import 'package:shopping_junction_seller/screens/ProductScreens/ImageUploadScreen.dart';
+import 'package:shopping_junction_seller/screens/ProductScreens/createProduct.dart';
+import 'package:shopping_junction_seller/screens/ProductScreens/productList.dart';
 import 'package:shopping_junction_seller/screens/home.dart';
 // import 'package:shopping_junction_seller/screens/login.dart';
 
@@ -70,6 +73,15 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.teal,
       ),
+      routes: <String,WidgetBuilder>{
+        '/home':(BuildContext context) => new HomeScreen(),
+        '/productList':(BuildContext context) => new ProductScreen(),
+        '/image':(BuildContext context) => new ImageScreen(),
+        // '/createProduct':(BuildContext context) => new CreateProductScreen(),
+        // '/subProduct':(BuildContext context) => new HomeScreen(),
+        // '/subProduct':(BuildContext context) => new HomeScreen(),
+
+      },
       home: HomeScreen(),
       
       // home: MyHomePage(title: 'Flutter Demo Home Page'),

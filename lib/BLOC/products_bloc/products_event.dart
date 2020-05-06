@@ -45,6 +45,18 @@ class OnProducts extends ProductsEvent{
   List<Object> get props => null;
 }
 
+class UpdateSubProduct extends ProductsEvent{
+  String id;
+  String mrp;
+  String listPrice;
+  String  qty;
+  UpdateSubProduct(this.id,this.mrp,this.listPrice,this.qty);
+  @override
+  // TODO: implement props
+  List<Object> get props => null;
+    
+} 
+
 class OnSubProducts extends ProductsEvent{
   String id;
   OnSubProducts(this.id);

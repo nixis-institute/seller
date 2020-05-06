@@ -1,4 +1,16 @@
 
+String updateSubProductQuery ="""
+mutation x(\$id:ID!,\$mrp:String!,\$list:String!,\$qty:String!){
+  updateSubProduct(id:\$id,mrp:\$mrp,listPrice:\$list,qty:\$qty)
+  {
+    prd{
+      size
+    }
+  }
+}
+""";
+
+
 String getProductByParentId ="""
 query x(\$id:ID!){
   productByParentId(id:\$id)
@@ -28,12 +40,25 @@ query x(\$id:ID!){
 
 """;
 
+
+String imageUploadQuery ="""
+mutation (\$id: Int!) {
+  uploadImages(id: \$id) {
+    success
+  }
+}
+""";
+
 String uploadParentProductQuery ="""
 
 mutation x(\$id:ID!,\$prdName:String!,\$brand:String!,\$shortDesc:String!,\$longDesc:String!){
 	createParentProduct(typeId:\$id,brand:\$brand,prdName:\$prdName,shortDesc:\$shortDesc,longDesc:\$longDesc)
   {
     prdId
+    prd{
+      id
+      name      
+    }
   }
 }
 
