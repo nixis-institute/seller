@@ -27,14 +27,22 @@ class ProductScreenState extends State<ProductScreen> with TickerProviderStateMi
   {
 
     super.initState();
-    _productsBloc = ProductsBloc();
-    _productsBloc.add(
-    OnProducts()
+    BlocProvider.of<ProductsBloc>(context).add(
+      // OnProductType(this.widget.id)
+      OnProducts()
     );
+    // _productsBloc = ProductsBloc();
+    // _productsBloc.add(
+    // OnProducts()
+    // );
 
     int _currentIndex = 0;
     LoadProductsWithStatus p;
-
+    tabController = TabController(vsync:this, length: 2);
+    // final state = (_productsBloc.state as LoadProductsWithStatus);
+    // print(p);
+    // tabController = TabController(vsync:this, length: state.products.length);
+    
     // tabController = TabController(vsync:this, length: p.products.length);
   
   
@@ -89,9 +97,21 @@ class ProductScreenState extends State<ProductScreen> with TickerProviderStateMi
            child: Center(child:CircularProgressIndicator()));
        }
        if(state is LoadProductsWithStatus){
-        tabController = TabController(vsync:this, length: state.products.length);
+        // tabController = TabController(vsync:this, length: state.products.length);
+
+      tabController.addListener(() {
+        // print(tabController.index);
+        // print(tabController.indexIsChanging);
+        // setState(() {
+        //   _currentIndex = tabController.index;
+        //   endCursor = product[_currentIndex].endCursor;
+        //   hasNextPage = product[_currentIndex].hasNextPage;
+        //   id = product[_currentIndex].id;
+        // });
+      });
+
          return 
-         
+
          Scaffold(
           //  appBar: AppBar(
           //    title:Text("Product"),
@@ -130,147 +150,157 @@ class ProductScreenState extends State<ProductScreen> with TickerProviderStateMi
             ),
 
 
-            body: NestedScrollView(
-                
-                // controller: ,
-                headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled){
-                  return <Widget>[
-                    SliverAppBar(
-                      title: Text("Products"),
-                      pinned: true,
-                      floating: true,                      
-                      forceElevated: innerBoxIsScrolled,
-                      bottom: TabBar(
-                      controller: tabController,
-                      tabs: List.generate(state.products.length, (index)=>
-                        Tab(
-                          child: Text(state.products[index].status+"("+state.products[index].products.length.toString()+")"),
+            body: DefaultTabController(
+                  length: state.products.length,
+                  child: NestedScrollView(
+                  
+                  // controller: ,
+                  headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled){
+                    return <Widget>[
+                      SliverAppBar(
+                        actions: <Widget>[
+                          
+                        ],
+
+                        snap: true,
+                        title: Text("Products"),
+                        pinned: true,
+                        floating: true,                      
+                        // forceElevated: innerBoxIsScrolled,
+                        bottom: TabBar(
+                        isScrollable: true,
+                        controller: tabController,
+                        tabs: List.generate(state.products.length, (index)=>
+                          Tab(
+                            child: Text(state.products[index].status+"("+state.products[index].products.length.toString()+")"),
+                          ),
                         ),
-                      ),
+                        
+                        ),
+                      )
+                    ];
+                  },
+                  
+                  body: TabBarView(
+                  controller: tabController,
+                  
+                  children: List.generate(state.products.length, (index){
+
+                    // setState(() {
+                    //   duplicate = state.products[index] as List<Product>;
+                    // });
+                    var _allproducts = state.products[index].products;
+                    // all_duplicate = _allproducts;
+                    // setState(() {
+                    //   duplicate = _allproducts;
+                    //   all_duplicate = _allproducts;
+                    // });
+
+                    return  Container(
+                      // color: Colors.green,
+                      alignment: Alignment.topCenter,
+                      child: 
                       
-                      ),
-                    )
-                  ];
-                },
-                
-                body: TabBarView(
-                controller: tabController,
-                children: List.generate(state.products.length, (index){
+                      Column(
+                        children: <Widget>[
+                          Container(
+                            color: Colors.white,
+                            padding: EdgeInsets.only(left:5,right:5,top:5),
+                            child: TextFormField(
+                              // focusNode: true
+                              onChanged: (value){
+                                // filterSearchResult(value);
+                              },
 
-                  // setState(() {
-                  //   duplicate = state.products[index] as List<Product>;
-                  // });
-                  var _allproducts = state.products[index].products;
-                  // all_duplicate = _allproducts;
-                  // setState(() {
-                  //   duplicate = _allproducts;
-                  //   all_duplicate = _allproducts;
-                  // });
+                              autofocus: false,
+                              decoration: InputDecoration(
+                                filled: true,
+                                
+                                prefixIcon: Icon(Icons.search),
+                                contentPadding: const EdgeInsets.only(left: 1.0,top:15,),
+                                fillColor: Colors.grey[100],
+                                hintText: "Search..",
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white),
+                                  borderRadius: BorderRadius.circular(25.7),
+                                ),
 
-                  return  Container(
-                    // color: Colors.green,
-                    alignment: Alignment.topCenter,
-                    child: 
-                    
-                    Column(
-                      children: <Widget>[
-                        Container(
-                          color: Colors.white,
-                          padding: EdgeInsets.only(left:5,right:5,top:5),
-                          child: TextFormField(
-                            // focusNode: true
-                            onChanged: (value){
-                              // filterSearchResult(value);
-                            },
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white),
+                                  borderRadius: BorderRadius.circular(25.7),
+                                ),                              
 
-                            autofocus: false,
-                            decoration: InputDecoration(
-                              filled: true,
-                              
-                              prefixIcon: Icon(Icons.search),
-                              contentPadding: const EdgeInsets.only(left: 1.0,top:15,),
-                              fillColor: Colors.grey[100],
-                              hintText: "Search..",
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
-                                borderRadius: BorderRadius.circular(25.7),
+                                // fillColor: Colors.accents,
+                                // border: InputBorder.none
+
+                              //   border: OutlineInputBorder(   
+                              //     // borderSide: BorderSide(width: 4,color: Colors.white),
+                              //   borderRadius: BorderRadius.all(Radius.circular(30))
+                              // )
                               ),
-
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
-                                borderRadius: BorderRadius.circular(25.7),
-                              ),                              
-
-                              // fillColor: Colors.accents,
-                              // border: InputBorder.none
-
-                            //   border: OutlineInputBorder(   
-                            //     // borderSide: BorderSide(width: 4,color: Colors.white),
-                            //   borderRadius: BorderRadius.all(Radius.circular(30))
-                            // )
                             ),
                           ),
-                        ),
-                        // Text("sdf"),
+                          // Text("sdf"),
 
 
-                        Expanded(
-                                child: MediaQuery.removePadding(
-                              removeTop: true,
-                              context: context,
-                              child: 
-                              ListView.separated(
-                              shrinkWrap: true,
-                              scrollDirection: Axis.vertical,
-                              separatorBuilder: (context, index) => Divider(
-                              indent: 55,
-                              endIndent: 0,
-                              color: Colors.grey[400],
-                              height: 0,
-                              ),
-                              itemCount: _allproducts.length,
-                              itemBuilder:(BuildContext context,int i){
-                              
-                              // setState(() {
-                              //   duplicate = state.products;
-                              // });
-                              
-                                Product product =  _allproducts[i];
-                                return 
-                                Container(
-                                  color: Colors.white,
-                                  child: ListTile(
-                                    onTap: (){
-                                      Navigator.push(context, 
-                                        MaterialPageRoute(builder: (_)=>SubProductScreen(
-                                          product.id,product.name
-                                      )));
-                                    },
-                                    trailing: Text(product.productSize.toString()),
-                                    leading: CachedNetworkImage(
-                                      height: 40,
-                                      imageUrl:server_url+"/media/"+product.imageLink.toString() ),
-                                    title: Text(product.name,style: TextStyle(fontWeight: FontWeight.normal),),
-                                    // subtitle: Text(product. ),
-                                    // subtitle: Text(product.name),
-                                  ),
-                                );
-                 
-                              }
-                              
-                              ),
+                          Expanded(
+                                  child: MediaQuery.removePadding(
+                                removeTop: true,
+                                context: context,
+                                child: 
+                                ListView.separated(
+                                shrinkWrap: true,
+                                scrollDirection: Axis.vertical,
+                                separatorBuilder: (context, index) => Divider(
+                                indent: 55,
+                                endIndent: 0,
+                                color: Colors.grey[400],
+                                height: 0,
+                                ),
+                                itemCount: _allproducts.length,
+                                itemBuilder:(BuildContext context,int i){
+                                
+                                // setState(() {
+                                //   duplicate = state.products;
+                                // });
+                                
+                                  Product product =  _allproducts[i];
+                                  return 
+                                  Container(
+                                    color: Colors.white,
+                                    child: ListTile(
+                                      onTap: (){
+                                        Navigator.push(context, 
+                                          MaterialPageRoute(builder: (_)=>SubProductScreen(
+                                            product.id,product.name
+                                        )));
+                                      },
+                                      trailing: Text(product.productSize.toString()),
+                                      leading: CachedNetworkImage(
+                                        height: 40,
+                                        imageUrl:server_url+"/media/"+product.imageLink.toString() ),
+                                      title: Text(product.name,style: TextStyle(fontWeight: FontWeight.normal),),
+                                      // subtitle: Text(product. ),
+                                      // subtitle: Text(product.name),
+                                    ),
+                                  );
+                   
+                                }
+                                
+                                ),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                
-                
-                
-                    );
-                  // Center(child: Text(state.products[index].status));
-                })
-                
-                ),
+                        ],
+                      ),
+                  
+                  
+                  
+                      );
+                    // Center(child: Text(state.products[index].status));
+                  })
+                  
+                  ),
+              ),
             ),
          
          

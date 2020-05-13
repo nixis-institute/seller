@@ -9,6 +9,10 @@ class ProductsLoading extends ProductsState{
     final List<Category> categories=[];
     List<Category> get props => null;
 }
+class LoadVarientForm extends ProductsState{
+    final List<Object> categories=[];
+    List<Category> get props => null;
+}
 
 class ParentUploadLoading extends ProductsState{
     // final List<Category> categories=[];
@@ -18,6 +22,15 @@ class ParentUploadLoading extends ProductsState{
 class ProductsInitial extends ProductsState {
     final List<Category> categories=[];
     List<Category> get props => null;
+}
+class LoadRemainedSized extends ProductsState{
+  final List<String> sizes;
+  
+  LoadRemainedSized({this.sizes});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => null;
 }
 
 class ParentProductLoaded extends ProductsState{

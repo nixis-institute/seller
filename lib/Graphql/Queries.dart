@@ -10,6 +10,15 @@ mutation x(\$id:ID!,\$mrp:String!,\$list:String!,\$qty:String!){
 }
 """;
 
+String createSubProductQuery ="""
+mutation x(\$id:ID!,\$size:String!,\$color:String!,\$qty:String!,\$mrp:String!,\$list:String!){
+  createSubProduct(id:\$id,size:\$size,color:\$color,qty:\$qty,mrp:\$mrp,listPrice:\$list){
+    subProduct{
+      id
+    }
+  }
+}
+""";
 
 String getProductByParentId ="""
 query x(\$id:ID!){

@@ -6,9 +6,9 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 // import 'package:flutter_graphql/src/link/fetch_result.dart';
 
 
-final server_url = 'http://shoppingjunction.pythonanywhere.com';
+// final server_url = 'http://shoppingjunction.pythonanywhere.com';
 // final server_url = "http://10.0.2.2:8000";
-// final server_url = "http://127.0.0.1:8000";
+final server_url = "http://127.0.0.1:8000";
 
   // class AuthLink extends Link {
   //   AuthLink()
@@ -52,14 +52,14 @@ final HttpLink httpLink = HttpLink(
   // }
 );
 
-final ValueNotifier<GraphQLClient> client = ValueNotifier<GraphQLClient>(
-      GraphQLClient(
-        link:httpLink as Link,
-        // link:authLink,
-        cache: InMemoryCache(),
-        // cache: OptimisticCache(dataIdFromObject: typenameDataIdFromObject)
-  )
-);
+// final ValueNotifier<GraphQLClient> client = ValueNotifier<GraphQLClient>(
+//       GraphQLClient(
+//         link:httpLink as Link,
+//         // link:authLink,
+//         cache: InMemoryCache(),
+//         // cache: OptimisticCache(dataIdFromObject: typenameDataIdFromObject)
+//   )
+// );
 
 
 GraphQLClient clientToQuery() {

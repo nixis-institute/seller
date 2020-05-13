@@ -45,6 +45,18 @@ class OnProducts extends ProductsEvent{
   List<Object> get props => null;
 }
 
+class OnSubProductForm extends ProductsEvent{
+  OnSubProductForm();
+  @override
+  // TODO: implement props
+  List<Object> get props => null;
+}
+
+class OnAddVarient extends ProductsEvent{
+  OnAddVarient();
+  List<Object> get props => null;
+}
+
 class UpdateSubProduct extends ProductsEvent{
   String id;
   String mrp;

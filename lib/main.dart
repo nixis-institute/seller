@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:shopping_junction_seller/BLOC/products_bloc/product_repository.dart';
+import 'package:shopping_junction_seller/BLOC/products_bloc/products_bloc.dart';
+import 'package:shopping_junction_seller/BLOC/subproducts_bloc/subproduct_bloc.dart';
+import 'package:shopping_junction_seller/BLOC/subproducts_bloc/subproduct_repository.dart';
 import 'package:shopping_junction_seller/Graphql/services.dart';
 import 'package:shopping_junction_seller/screens/ProductScreens/ImageUploadScreen.dart';
 import 'package:shopping_junction_seller/screens/ProductScreens/createProduct.dart';
@@ -37,84 +41,156 @@ void main()
 {
   // BlocSupervisor.delegate = SimpleBlocDelegate();
   // final userRepository = UserRepository();
+  ProductRepository productRepository = ProductRepository();
+  SubProductRepository subProductRepository = SubProductRepository();
+  // BlocSupervisor.delegate = SimpleBlocDelegate();
   runApp(
+    
   
     // MyApp()
-      MyApp()
-    // BlocProvider<AuthenticationBloc>(
-    //   create: (context) {
-    //     return AuthenticationBloc(userRepository: userRepository)
-    //       ..add(AppStarted());
-    //   },
-    //   child: MyApp(userRepository: userRepository),
-    
+      MultiBlocProvider(
+        providers: [
+          BlocProvider<ProductsBloc>(
+            create: (context) => ProductsBloc(productRepository),
+          ),
+          BlocProvider<SubproductBloc>(
+            create: (context) => SubproductBloc(repository: subProductRepository),
+          )
+        ],
+        child: MyApp(productRepository:productRepository,subProductRepository:subProductRepository),
+      )
     
   );
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-  // final UserRepository userRepository;
-  // MyApp()
-
+class MyApp extends StatelessWidget{
+  final ProductRepository productRepository;
+  final SubProductRepository subProductRepository;
+  
+  MyApp({Key key, @required this.productRepository,this.subProductRepository})
+      : assert(productRepository != null,subProductRepository!=null),
+        super(key: key);
+  
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Shopping Junction Seller',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.teal,
-      ),
-      routes: <String,WidgetBuilder>{
-        '/home':(BuildContext context) => new HomeScreen(),
-        '/productList':(BuildContext context) => new ProductScreen(),
-        '/image':(BuildContext context) => new ImageScreen(),
-        // '/createProduct':(BuildContext context) => new CreateProductScreen(),
-        // '/subProduct':(BuildContext context) => new HomeScreen(),
-        // '/subProduct':(BuildContext context) => new HomeScreen(),
+  Widget build(BuildContext context){
+    return BlocBuilder<ProductsBloc,ProductsState>(
+      builder: (context,state){
+        return MaterialApp(
+          title: 'Shopping Junction Seller',
+          theme: ThemeData(
+            primaryColor: Colors.teal
+          ),
+          
+          routes: <String,WidgetBuilder>{
+            '/home':(BuildContext context) => new HomeScreen(),
+            '/productList':(BuildContext context) => new ProductScreen(),
+            '/image':(BuildContext context) => new ImageScreen(),
+          },
 
+        home: BlocProvider(
+          create: (context)=>ProductsBloc(
+            productRepository
+          ),
+          child: HomeScreen(),
+        ),
+
+        );
       },
-      home: HomeScreen(),
-      
-      // home: MyHomePage(title: 'Flutter Demo Home Page'),
-
-      
-      // home:BlocBuilder<AuthenticationBloc, AuthenticationState>(
-      //   builder:(context,state){
-      //     if(state is AuthenticationUnauthenticated){
-      //       return LoginScreen(userRepository: userRepository);
-      //     }
-      //     if(state is AuthenticationAuthenticated){
-      //       return HomeScreen();
-      //     }
-      //     if(state is AuthenticationUninitialized){
-      //       return HomeScreen();
-      //     }
-      //     if(state is AuthenticationLoading){
-      //       return HomeScreen();
-      //     }
-      //   }
-      // )
-
-      // home: GraphQLProvider(
-      //   client: client,
-      //   child: CacheProvider(
-      //     child: LoginScreen(userRepository: null,)
-      //     ),
-      // ),
-
-
     );
   }
 }
+
+// class MyApp extends StatelessWidget {
+
+
+// //  App({Key key, @required this.weatherRepository})
+// //       : assert(weatherRepository != null),
+// //         super(key: key);
+
+//   final ProductRepository productRepository;
+//   final SubProductRepository subProductRepository;
+
+//   MyApp({Key key, @required this.productRepository,this.subProductRepository}) :assert(productRepository!=null,subProductRepository!=null),
+//   super(key: key) ;
+//   // This widget is the root of your application.
+//   // final UserRepository userRepository;
+//   // MyApp()
+//   // ProductsBloc _productsBloc = ProductsBloc(productRepository);
+//   @override
+//   Widget build(BuildContext context) {
+//     print(subProductRepository);
+//     return MultiBlocProvider(
+//         providers: [
+//           BlocProvider<ProductsBloc>(
+//             create: (context) => ProductsBloc(productRepository),
+//           ),
+//           BlocProvider<SubproductBloc>(
+//             create: (context) => SubproductBloc(repository: subProductRepository),
+//           )
+//         ],
+//         // create: (context)=>ProductsBloc(productRepository),
+        
+        
+//         child: 
+        
+        
+//         MaterialApp(
+//         title: 'Shopping Junction Seller',
+//         theme: ThemeData(
+//           // This is the theme of your application.
+//           //
+//           // Try running your application with "flutter run". You'll see the
+//           // application has a blue toolbar. Then, without quitting the app, try
+//           // changing the primarySwatch below to Colors.green and then invoke
+//           // "hot reload" (press "r" in the console where you ran "flutter run",
+//           // or simply save your changes to "hot reload" in a Flutter IDE).
+//           // Notice that the counter didn't reset back to zero; the application
+//           // is not restarted.
+//           primarySwatch: Colors.teal,
+//         ),
+//         routes: <String,WidgetBuilder>{
+//           '/home':(BuildContext context) => new HomeScreen(),
+//           '/productList':(BuildContext context) => new ProductScreen(),
+//           '/image':(BuildContext context) => new ImageScreen(),
+//           // '/createProduct':(BuildContext context) => new CreateProductScreen(),
+//           // '/subProduct':(BuildContext context) => new HomeScreen(),
+//           // '/subProduct':(BuildContext context) => new HomeScreen(),
+
+//         },
+//         home: HomeScreen(),
+        
+//         // home: MyHomePage(title: 'Flutter Demo Home Page'),
+
+        
+//         // home:BlocBuilder<AuthenticationBloc, AuthenticationState>(
+//         //   builder:(context,state){
+//         //     if(state is AuthenticationUnauthenticated){
+//         //       return LoginScreen(userRepository: userRepository);
+//         //     }
+//         //     if(state is AuthenticationAuthenticated){
+//         //       return HomeScreen();
+//         //     }
+//         //     if(state is AuthenticationUninitialized){
+//         //       return HomeScreen();
+//         //     }
+//         //     if(state is AuthenticationLoading){
+//         //       return HomeScreen();
+//         //     }
+//         //   }
+//         // )
+
+//         // home: GraphQLProvider(
+//         //   client: client,
+//         //   child: CacheProvider(
+//         //     child: LoginScreen(userRepository: null,)
+//         //     ),
+//         // ),
+
+
+//       ),
+//     );
+//   }
+// }
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);

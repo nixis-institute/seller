@@ -1,10 +1,15 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:shopping_junction_seller/BLOC/products_bloc/products_bloc.dart';
+// import 'package:shopping_junction_seller/BLOC/products_bloc/products_bloc.dart';
+import 'package:shopping_junction_seller/BLOC/subproducts_bloc/subproduct_bloc.dart';
 import 'package:shopping_junction_seller/Graphql/Queries.dart';
 import 'package:shopping_junction_seller/Graphql/services.dart';
 import 'package:shopping_junction_seller/models/productModel.dart';
+import 'package:shopping_junction_seller/screens/ProductScreens/AddProductSize.dart';
+import 'package:shopping_junction_seller/screens/ProductScreens/imageScreen.dart';
 
 
 class SubProductScreen extends StatefulWidget{
@@ -16,18 +21,25 @@ class SubProductScreen extends StatefulWidget{
 
 class _SubProductScreen extends State<SubProductScreen>
 {
-  ProductsBloc _productsBloc;
+  // ProductsBloc _productsBloc;
   bool isSubmit = false;
   SubProduct dup;
+  SubproductBloc _bloc;
   void initState()
   {
     super.initState();
-    _productsBloc = ProductsBloc();
-    _productsBloc.add(
+    BlocProvider.of<SubproductBloc>(context).add(
       OnSubProducts(this.widget.id)
+        
+        // OnSubProducts(this.widget.id)
     );
+    // _productsBloc = ProductsBloc();
+    // _productsBloc.add(
+    //   OnSubProducts(this.widget.id)
+    // );
     isSubmit = false;
   }
+
 
   void _updateSubProduct(id,mrp,list,qty,SubProduct product) async{
     GraphQLClient _client = clientToQuery();
@@ -64,6 +76,10 @@ class _SubProductScreen extends State<SubProductScreen>
   }
   
   void _showDialog(SubProduct product){
+    // _productsBloc.add(
+    //   OnAddVarient());
+    // OnAddVarient
+    
     setState(() {
       dup = product as SubProduct;
     });
@@ -98,7 +114,7 @@ class _SubProductScreen extends State<SubProductScreen>
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               
-              // SizedBox(height:15),
+              // SizedBox(height:10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -119,7 +135,7 @@ class _SubProductScreen extends State<SubProductScreen>
                   // Text(product.mrp.toString(),style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold),)
                 ],
               ),
-              SizedBox(height:15),
+              SizedBox(height:10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -294,30 +310,49 @@ class _SubProductScreen extends State<SubProductScreen>
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton.extended(
       onPressed: (){
-        // Navigator.push(context, MaterialPageRoute(builder: 
-        // (_)=>AddProduct(
+        Navigator.push(context, MaterialPageRoute(builder: 
+          (_)=>AddProductSizeScreen(
+            this.widget.id
+        )));        
+        // _productsBloc.add(
+        //   OnVarientSize()
+        //   // OnSubProducts(this.widget.id)
         
-        // // state.products[index].id,state.products[index].name
-        // )));  
+        // );
+
+      // BlocBuilder<ProductsBloc,ProductsState>(
+      //   bloc: _productsBloc,
+      //   builder: (context,state){
+      //     if(state is LoadSubProduct){
+
+      //         Navigator.push(context, MaterialPageRoute(builder: 
+      //           (_)=>AddProductSizeScreen(
+            
+      //       )));
+      //     }
+      //   },
+      // );
+  
       },
       
-      tooltip: 'Add Varient',
+      tooltip: 'Add Size',
       icon: Icon(Icons.add),
-      label: Text("Add Varient")
+      label: Text("Add Size")
       ),
 
 
 
-      body: BlocBuilder<ProductsBloc,ProductsState>(
-        bloc: _productsBloc,
+      body: BlocBuilder<SubproductBloc,SubproductState>(
+        // bloc: _productsBloc,
+        bloc:_bloc,
         builder: (context,state){
-          if(state is ProductsLoading)
+          if(state is SubProductsLoading)
           {
             return Center(child: CircularProgressIndicator(),);
           }
           if(state is LoadSubProduct){
             List<SubProductModel>  products = state.products; 
-            // print(products);
+            // print("main length "+products.length.toString());
             // return Text("loaded");
 
             return Container(
@@ -355,89 +390,95 @@ class _SubProductScreen extends State<SubProductScreen>
                                 ),
 
                                 
-                                ListView.builder(
+                                ListView.separated(
+                                  separatorBuilder: (context, index) => Divider(
+                                    color: Colors.grey[0],
+                                    height: 0,
+                                    ),
+                                  physics: ClampingScrollPhysics(),
                                   shrinkWrap: true,
                                   itemCount: products[i].product.length,
                                   itemBuilder: (context,j){
                                     return Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: <Widget>[  
-                                        SizedBox(height: 10,),
+                                        // SizedBox(height: 10,),
                                         InkWell(
                                             onTap: (){
-                                              _showDialog(products[i].product[j]);
+                                              // _showDialog(products[i].product[j]);
+                                            _showSheet(context,products[i].product[j]);
+
                                             },
-                                            child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: <Widget>[
+                                            child: Container(
+                                              padding: EdgeInsets.all(10),
+                                              // color: Colors.red,
+                                              child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: <Widget>[
 
 
-                                              // Text(products[i].product[j].color),
-
-
-
-
-                                              Row(
-                                                children: <Widget>[
-                                                  Container(
-                                                    padding: EdgeInsets.all(3),
-                                                    height: 20,
-                                                    width: 20,
-                                                    decoration: BoxDecoration(
-                                                      border: Border.all(width:0.2,color:Colors.grey),
-                                                      color: Color(int.parse(products[i].product[j].color.toString().replaceAll("#", "0xff"))),
-                                                      borderRadius: BorderRadius.circular(50)
-                                                      ),
-                                                  // child:
-                                                  ),
-                                                  SizedBox(width: 10,),
-                                                    Text(
-                                                    colorsPicker[products[i].product[j].color.toString()],
-                                                    style: TextStyle(color: Colors.black),
-                                                  ),
-                                                  SizedBox(width: 10,),
-                                                  Text("("+products[i].product[j].qty.toString()+")")
-                                                  // SizedBox(width: 10,),
-                                                  // Icon(Icons.add_circle_outline,color: Colors.grey,)
-                                                ],
-                                              ),
+                                                // Text(products[i].product[j].color),
 
 
 
 
+                                                Row(
+                                                  children: <Widget>[
+                                                    Container(
+                                                      padding: EdgeInsets.all(3),
+                                                      height: 20,
+                                                      width: 20,
+                                                      decoration: BoxDecoration(
+                                                        border: Border.all(width:0.2,color:Colors.grey),
+                                                        color: Color(int.parse(products[i].product[j].color.toString().replaceAll("#", "0xff"))),
+                                                        borderRadius: BorderRadius.circular(50)
+                                                        ),
+                                                    // child:
+                                                    ),
+                                                    SizedBox(width: 10,),
+                                                      Text(
+                                                      colorsPicker[products[i].product[j].color.toString()],
+                                                      style: TextStyle(color: Colors.black),
+                                                    ),
+                                                    SizedBox(width: 10,),
+                                                    Text("("+products[i].product[j].qty.toString()+")")
+                                                    // SizedBox(width: 10,),
+                                                    // Icon(Icons.add_circle_outline,color: Colors.grey,)
+                                                  ],
+                                                ),
 
 
 
-                                              Row(
-                                                children: <Widget>[
-                                                  Text("\u20B9 "+ products[i].product[j].mrp.toString(),
-                                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
+
+
+
+
+                                                Row(
+                                                  children: <Widget>[
+                                                    Text("\u20B9 "+ products[i].product[j].mrp.toString(),
+                                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                                    ),
+                                                  ],
+                                                ),
+
+
+
+                                              ],
                                           ),
+                                            ),
                                         ),
-                                      Divider()  
+                                      // Divider()  
                                       ],
                                     );
                                   },
                                 ),
 
-                                SizedBox(height:5),
+                                
+                                Divider(height: 0,),
+                                SizedBox(height:15),
                                 Center(child: Text('Add Color',style: TextStyle(color: Colors.green),))
 
 
-
-
-                                // widget(
-                                //   child: Row(
-                                //     children: <Widget>[
-                                //       Text(products[i].product[0].color),
-                                //       Text(products[i].product[0].mrp.toString()),
-                                //     ],
-                                //   ),
-                                // )
 
 
                               ],
@@ -466,9 +507,58 @@ class _SubProductScreen extends State<SubProductScreen>
             return Text("error");
           }
         }
+        
       
       )
-    );
 
+    );
+  }
+
+  // _showS(context){
+  //   showCupertinoModalPopup(
+  //     context: context, builder: (BuildContext bc){
+  //       return 
+  //     }
+      
+  //     );
+  // }
+  _showSheet(context,SubProduct prd){
+    showModalBottomSheet(
+    // showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext bc){
+        return Container(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                leading: Icon(Icons.edit),
+                title: Text("Edit"),
+                onTap: (){
+                  // Navigation.pop
+                  Navigator.pop(context);
+                  _showDialog(prd);
+                },
+              ),
+              Divider(),
+
+              ListTile(
+                onTap: (){
+                  // Navigator.push(context, route)
+                  Navigator.pop(context);
+                  Navigator.push(context, MaterialPageRoute(builder: 
+                    (_)=>ImageScreen(
+                      prd
+                  )));
+
+                },
+                leading: Icon(Icons.image),
+                // subtitle: Text(prd.images.length.toString() ),
+                title: Text(prd.images.length.toString() +" Images"),
+              ),                
+            ],
+          ),
+        );
+      }
+    );
   }
 }

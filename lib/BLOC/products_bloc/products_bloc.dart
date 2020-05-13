@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:meta/meta.dart';
+import 'package:shopping_junction_seller/BLOC/products_bloc/product_repository.dart';
 import 'package:shopping_junction_seller/Graphql/Queries.dart';
 import 'package:shopping_junction_seller/Graphql/services.dart';
 import 'package:shopping_junction_seller/models/productModel.dart';
@@ -13,12 +14,17 @@ part 'products_state.dart';
 
 class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
   GraphQLClient client = clientToQuery();
+  final ProductRepository _productRepository;
+  ProductsBloc(this._productRepository);
+
+  // ProductRepository _productRepository = new ProductRepository();
+
   @override
   ProductsState get initialState => ProductsInitial();
 
   @override
   Stream<ProductsState> mapEventToState(ProductsEvent event,) async* {
-  
+    var currentState = state;
     if(event is OnMainCategory)
     {
       // print("category....");
@@ -76,17 +82,51 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
     // if(event is UpdateSubProduct){
     //   final data = await _updateSubProduct();
     // }
-  
-  
+
+    if(event is OnSubProductForm){
+      yield LoadVarientForm();
+    }
+    // currentState = LoadSubProduct;
+    
+    if(event is OnAddVarient){
+      // print(currentState.products);
+      if(currentState is LoadSubProduct){
+        print(currentState.products);
+      }
+      // currentState = LoadSubProduct;
+      // currentState = currentState as LoadProducts;
+      
+      // if(currentState is LoadSubProduct){
+      //   List<String> s = [];
+        
+      //   // currentState.products.map((e)=>{
+      //   //   s.add(e.size)
+      //   // });
+      //   yield LoadRemainedSized(sizes:s);
+      //   // LoadRemainedSized(:s);
+      //   // currentState.products[0].
+      // }
+      // else{
+      //   print(currentState);
+      //   List<String> d=["S","P"];
+      //   yield LoadRemainedSized(sizes:d);
+      // }
+    }
+
     if(event is OnSubProducts)
     {
       yield ProductsLoading();
       // print(event.id);
+      // final products = await _productRepository.getSubProductByRepository(event.id);
       final products = await _fetchSubProduct(event.id);
       // print(event.id);
       yield LoadSubProduct(products: products);
+      // print(event);
+      print(currentState);
+      return;
+      // if(currentState is )
       // yield LoadSubCateogry(subcategories: category);
-      return;      
+      
     
     }
   }

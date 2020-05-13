@@ -24,10 +24,14 @@ class AddProductSate extends State<AddProduct>
 
   void initState(){
     super.initState();
-    _productsBloc = ProductsBloc();
-    _productsBloc.add(
+    BlocProvider.of<ProductsBloc>(context).add(
+      // OnProductType(this.widget.id)
       OnMainCategory()
     );
+    // _productsBloc = ProductsBloc();
+    // _productsBloc.add(
+    //   OnMainCategory()
+    // );
 
   }
 
@@ -160,10 +164,14 @@ class SubCategoryScreenState extends State<SubCategoryScreen>
   void initState()
   {
     super.initState();
-    _productsBloc = ProductsBloc();
-    _productsBloc.add(
+    BlocProvider.of<ProductsBloc>(context).add(
+      // OnProductType(this.widget.id)
       OnSubCategory(this.widget.id)
     );
+    // _productsBloc = ProductsBloc();
+    // _productsBloc.add(
+    //   OnSubCategory(this.widget.id)
+    // );
   }
   @override
   Widget build(BuildContext context){
@@ -208,10 +216,13 @@ class TypeScreenState extends State<TypeScreen>
   {
 
     super.initState();
-    _productsBloc = ProductsBloc();
-    _productsBloc.add(
+    // _productsBloc = ProductsBloc();
+    BlocProvider.of<ProductsBloc>(context).add(
       OnProductType(this.widget.id)
     );
+    // _productsBloc.add(
+    //   OnProductType(this.widget.id)
+    // );
   }
   @override
   Widget build(BuildContext context){

@@ -106,7 +106,8 @@ class _CreateProduct extends State<CreateProductScreen>
   @override
   void initState(){
     super.initState();
-    _productsBloc = ProductsBloc();
+    // _productsBloc = ProductsBloc();
+  
   }  
   
   Widget build(BuildContext context)
