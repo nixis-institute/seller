@@ -34,7 +34,144 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
       yield LoadCateogry(categories: category);
       return;
     }
+
+
+    if(event is MakeItInActive){
+        List<ProductWithStatus> x = (state as LoadProductsWithStatus).products;
+        // yield ProductsLoading();
+        await _productRepository.activatedProduct(event.product.id, 0 );
+        List<ProductWithStatus> prd = [];
+        
+        List<Product> temp =[];
+        for(int i=0;i<x.length;i++){
+            temp = [];
+            for(int j=0;j<x[i].products.length;j++){
+              if(x[i].products[j].id != event.product.id ){
+                // x[i].products[j].inStock = true;
+                temp.add(
+                  x[i].products[j]
+                );
+              }
+            }
+            // print(temp.length);
+            prd.add(
+              ProductWithStatus(x[i].status, temp)
+            );
+        }
+        event.product.isActive = false;
+        prd = prd..map((e){
+          return e.status == "InActive"?
+          e.products.insert(0,event.product):null;
+        }).toList();
+        yield LoadProductsWithStatus(products:prd);
+      
+    }
+
+    // if(event is MakeItActive){
+    //   if(state is LoadProductsWithStatus)
+    //   { 
+    //     List<ProductWithStatus> prd = [];
+    //     List<ProductWithStatus> x = (state as LoadProductsWithStatus).products;
+    //     List<Product> temp =[];
+    //     for(int i=0;i<x.length;i++){
+    //         temp = [];
+    //         for(int j=0;j<x[i].products.length;j++){
+    //           if(x[i].products[j].id != event.product.id ){
+    //             // x[i].products[j].inStock = true;
+    //             temp.add(
+    //               x[i].products[j]
+    //             );
+    //           }
+    //         }
+    //         print(temp.length);
+    //         prd.add(
+    //           ProductWithStatus(x[i].status, temp)
+    //         );
+    //     }
+    //     event.product.isActive = false;
+    //     prd = prd..map((e){
+    //       return e.status == "Active"?
+    //       e.products.add(event.product):null;
+    //     }).toList();
+    //     yield LoadProductsWithStatus(products:prd);
+    //   }
+    // }
+
+
+
+
+
+
+
+    if(event is MakeItInStock){
+      if(state is LoadProductsWithStatus)
+      { 
+        List<ProductWithStatus> x = (state as LoadProductsWithStatus).products;
+        // yield ProductsLoading();
+        await _productRepository.inStockProduct(event.product.id, 1);
+        List<ProductWithStatus> prd = [];
+        
+        List<Product> temp =[];
+        for(int i=0;i<x.length;i++){
+            temp = [];
+            for(int j=0;j<x[i].products.length;j++){
+              if(x[i].products[j].id != event.product.id ){
+                // x[i].products[j].inStock = true;
+                temp.add(
+                  x[i].products[j]
+                );
+              }
+            }
+            print(temp.length);
+            prd.add(
+              ProductWithStatus(x[i].status, temp)
+            );
+        }
+        event.product.inStock = true;
+        event.product.isActive = true;
+        prd = prd..map((e){
+          return e.status == "Instock"?
+          e.products.insert(0,event.product):null;
+        }).toList();
+        yield LoadProductsWithStatus(products:prd);
+      }
+    }
     
+    if(event is MakeItOutOfStock){
+      if(state is LoadProductsWithStatus)
+      {
+        List<ProductWithStatus> x = (state as LoadProductsWithStatus).products;
+        // yield ProductsLoading();
+        await _productRepository.inStockProduct(event.product.id, 0);
+        List<ProductWithStatus> prd = [];
+        
+        List<Product> temp =[];
+        for(int i=0;i<x.length;i++){
+            temp = [];
+            for(int j=0;j<x[i].products.length;j++){
+              if(x[i].products[j].id != event.product.id ){
+                // x[i].products[j].inStock = false;
+                temp.add(
+                  x[i].products[j]
+                );
+              }
+            }
+            print(temp.length);
+            prd.add(
+              ProductWithStatus(x[i].status, temp)
+          );
+        }
+        event.product.inStock = false;
+        event.product.isActive = true;
+        prd = prd..map((e){
+          return e.status == "Out of Stock"?
+          e.products.insert(0,event.product):null;
+        }).toList();
+        yield LoadProductsWithStatus(products:prd);
+      }
+    }
+
+
     if(event is OnProductType)
     {
       yield ProductsLoading();
@@ -70,9 +207,6 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
     if(event is OnCreateParentProduct){
       yield ParentUploadLoading();
       final data = await _uploadParentProduct(event.id,event.brand,event.prdName,event.sortDesc,event.longDesc);
-      // print(".....");
-      // print(data["id"]);
-      // print(data);
 
       yield ParentProductLoaded(id: data["id"],name:data["name"]);
       // print("after loaded...");
@@ -218,6 +352,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
       QueryResult result = await client.query(
         QueryOptions(
           documentNode: gql(getAllProductsQuery),
+          fetchPolicy: FetchPolicy.networkOnly
         )
       );
       // print("__");
@@ -229,19 +364,12 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
         List<ProductWithStatus> prdWS =[];
         List data = result.data["allProducts"]["edges"];
         List<Product> _inStockprd =[];
+        List<Product> _inActive =[];
         List<Product> _outStockprd =[];
         List<String> size = [];
         List<String> color=[];
         for(int i=0;i<data.length;i++)
         {
-
-
-            // color = data[i]["node"]["color"].toList();
-            // size = data[i]["node"]["sizes"];
-          // if(data[i]["node"]["color"] is dynamic){
-          //   print("thisisstring");
-          // }
-          
           data[i]["node"]["sizes"].forEach((f)=>{
             // print(f),
             size.add(f.toString()),
@@ -256,50 +384,58 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
 
 
           // print(data[i]["node"]["color"].length);
-          if(data[i]["node"]["instock"]==true)
+          if(data[i]["node"]["isActive"]==false){
+            _inActive.add(
+              Product(
+              data[i]["node"]["id"], 
+              data[i]["node"]["brand"], 
+              data[i]["node"]["name"], 
+              0, 
+              !data[i]["node"]["productimagesSet"]["edges"].isEmpty
+              ?data[i]["node"]["productimagesSet"]["edges"][0]["node"]["thumbnailImage"]:null,
+              data[i]["node"]["productSize"],
+              inStock: data[i]["node"]["instock"],
+              isActive:false
+              )
+            );
+          }
+          else if(data[i]["node"]["instock"]==true)
           {
-            // print(data[i]["node"]["sizes"]);
-            // size = data[i]["node"]["sizes"] as List<String>;
-            // color = data[i]["node"]["color"] as List<String>;
-            // print(data[i]["node"]["id"]);
-            // print(data[i]["node"]["name"],);
-            // print(data[i]["node"]["productSize"]);
             _inStockprd.add(
               Product(
               data[i]["node"]["id"], 
+              data[i]["node"]["brand"], 
               data[i]["node"]["name"], 
               0, 
-              0, 
-              
-              // data[i]["node"]["productimagesSet"]["edges"],
-              
               !data[i]["node"]["productimagesSet"]["edges"].isEmpty
               ?data[i]["node"]["productimagesSet"]["edges"][0]["node"]["thumbnailImage"]:null,
-              
-              ["S"],
-              // size.toList(),
-              // data[i]["node"]["sizes"] as List<String>, 
-              ["M"],
-              // color.toList(),
-              // data[i]["node"]["color"] as List<String>, 
-              data[i]["node"]["productSize"])
+              data[i]["node"]["productSize"],
+              inStock: data[i]["node"]["instock"],
+              isActive: true
+              )
             );
             // print("done...");
           }
           else{
             _outStockprd.add(
-              Product(data[i]["node"]["id"], 
+
+
+              Product(
+              data[i]["node"]["id"], 
+              data[i]["node"]["brand"],
               data[i]["node"]["name"], 
-              0, 
-              0, 
+              0, //listprice
               !data[i]["node"]["productimagesSet"]["edges"].isEmpty
               ?data[i]["node"]["productimagesSet"]["edges"][0]["node"]["thumbnailImage"]:null, 
               // ["S"],
               // ["M"],
               // data[i]["node"]["sizes"] as List<String>, 
-              size,color,
+              
               // data[i]["node"]["color"] as List<String>, 
-              data[i]["node"]["productSize"])
+              data[i]["node"]["productSize"],
+              inStock: data[i]["node"]["instock"],
+              isActive: true
+              )
             );
           }
         }
@@ -352,6 +488,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
         // print("...........");
         prdWS.add(ProductWithStatus("Instock",_inStockprd));
         prdWS.add(ProductWithStatus("Out of Stock",_outStockprd));
+        prdWS.add(ProductWithStatus("InActive",_inActive));
         // print(prdWS);
         return prdWS;
       }
@@ -483,75 +620,75 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
   }
 
 
-    Future<List<Product>> _fetcheProducts(id) async{
-      QueryResult result = await client.query(
-        QueryOptions(
-          documentNode: gql(getProductByTypeId),
-          variables: {
-            "id":id
-          }
-        )
-      );
+  //   Future<List<Product>> _fetcheProducts(id) async{
+  //     QueryResult result = await client.query(
+  //       QueryOptions(
+  //         documentNode: gql(getProductByTypeId),
+  //         variables: {
+  //           "id":id
+  //         }
+  //       )
+  //     );
 
-      if(!result.hasException){
-        var data = result.data["productBySublistId"]["edges"];
-        List<Product> products = [];
-        List<String> sizes=[];
-        List<String> color=[];
+  //     if(!result.hasException){
+  //       var data = result.data["productBySublistId"]["edges"];
+  //       List<Product> products = [];
+  //       List<String> sizes=[];
+  //       List<String> color=[];
         
-        for(int i=0;i<data.length;i++)
-        {
-          // print(data[i]["node"]["productimagesSet"]["edges"][0]["node"]["thumbnailImage"]);
-          sizes=[];
-          color=[];
-          // for(int j=0;j<data[i]["node"]["subproductSet"]["edges"].length;j++)
-          // {
-          //   sizes.add(data[i]["node"]["subproductSet"]["edges"][j]["node"]["size"]);
-          // }
-          // sizes=[];
-          // sizes.addAll(data[i]["node"]["sizes"]);
-          // color.addAll(data[i]["node"]["color"]);
-          // print(sizes);
-          data[i]["node"]["sizes"].forEach((f)=>{
-              sizes.add(f)
-              // print(f)
-          });
-          data[i]["node"]["color"].forEach((f)=>{
-              color.add(f)
-              // print(f)
-          });          
-          // print(data[i]["node"]["sizes"]);
-          // print(data[i]["node"]["color"]);
-          products.add(
-            Product(
-              data[i]["node"]["id"], 
-              data[i]["node"]["name"], 
-              0, 
-              0, 
-              !data[i]["node"]["productimagesSet"]["edges"].isEmpty
-              ?data[i]["node"]["productimagesSet"]["edges"][0]["node"]["thumbnailImage"]:null,
+  //       for(int i=0;i<data.length;i++)
+  //       {
+  //         // print(data[i]["node"]["productimagesSet"]["edges"][0]["node"]["thumbnailImage"]);
+  //         sizes=[];
+  //         color=[];
+  //         // for(int j=0;j<data[i]["node"]["subproductSet"]["edges"].length;j++)
+  //         // {
+  //         //   sizes.add(data[i]["node"]["subproductSet"]["edges"][j]["node"]["size"]);
+  //         // }
+  //         // sizes=[];
+  //         // sizes.addAll(data[i]["node"]["sizes"]);
+  //         // color.addAll(data[i]["node"]["color"]);
+  //         // print(sizes);
+  //         data[i]["node"]["sizes"].forEach((f)=>{
+  //             sizes.add(f)
+  //             // print(f)
+  //         });
+  //         data[i]["node"]["color"].forEach((f)=>{
+  //             color.add(f)
+  //             // print(f)
+  //         });          
+  //         // print(data[i]["node"]["sizes"]);
+  //         // print(data[i]["node"]["color"]);
+  //         products.add(
+  //           Product(
+  //             data[i]["node"]["id"], 
+  //             data[i]["node"]["name"], 
+  //             0, 
+  //             0, 
+  //             !data[i]["node"]["productimagesSet"]["edges"].isEmpty
+  //             ?data[i]["node"]["productimagesSet"]["edges"][0]["node"]["thumbnailImage"]:null,
               
-              // !data[i]["node"]["subproductSet"]["edges"].isEmpty?
+  //             // !data[i]["node"]["subproductSet"]["edges"].isEmpty?
 
-              // data[i]["node"]["sizes"],
-              // data[i]["node"]["color"],
-              // data[i]["node"]["sizes"],
-              // [],
-              sizes,
-              color,
-              // data[i]["node"]["color"].toList(),
-              data[i]["node"]["productSize"]
-              // data[i]["node"]["productimagesSet"]["edges"]?data[i]["node"]["productimagesSet"]["edges"][0]["node"]["thumbnailImage"]:null,
-              )
-            );
-          //   TypeProduct(
-          //   data[i]["node"]["id"], 
-          //   data[i]["node"]["name"])
-          // );
-        }
-        return products;
-      }
-  }
+  //             // data[i]["node"]["sizes"],
+  //             // data[i]["node"]["color"],
+  //             // data[i]["node"]["sizes"],
+  //             // [],
+  //             sizes,
+  //             color,
+  //             // data[i]["node"]["color"].toList(),
+  //             data[i]["node"]["productSize"]
+  //             // data[i]["node"]["productimagesSet"]["edges"]?data[i]["node"]["productimagesSet"]["edges"][0]["node"]["thumbnailImage"]:null,
+  //             )
+  //           );
+  //         //   TypeProduct(
+  //         //   data[i]["node"]["id"], 
+  //         //   data[i]["node"]["name"])
+  //         // );
+  //       }
+  //       return products;
+  //     }
+  // }
 
 
 }

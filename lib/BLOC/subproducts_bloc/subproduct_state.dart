@@ -11,7 +11,7 @@ class SubProductsLoading extends SubproductState{}
 class NavigateToPrevious extends SubproductState{}
 
 class FailureSubProduct extends SubproductState{}
-
+class NavigationPop extends SubproductState{}
 
 
 class LoadSubProduct extends SubproductState{

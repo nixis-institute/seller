@@ -1,8 +1,8 @@
-// import 'dart:html';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shopping_junction_seller/BLOC/products_bloc/product_repository.dart';
 // import 'package:shopping_junction_seller/BLOC/products_bloc/products_state.dart';
 // import 'package:shopping_junction_seller/BLOC/bloc/product_bloc.dart';
 import 'package:shopping_junction_seller/BLOC/products_bloc/products_bloc.dart';
@@ -19,19 +19,16 @@ class AddProductSate extends State<AddProduct>
 {
 
   // ProductBloc _productBloc;
+  ProductRepository rep;
   ProductsBloc _productsBloc;
   @override
 
   void initState(){
     super.initState();
-    BlocProvider.of<ProductsBloc>(context).add(
-      // OnProductType(this.widget.id)
+    _productsBloc = ProductsBloc(rep);
+    _productsBloc.add(
       OnMainCategory()
     );
-    // _productsBloc = ProductsBloc();
-    // _productsBloc.add(
-    //   OnMainCategory()
-    // );
 
   }
 
@@ -40,7 +37,7 @@ class AddProductSate extends State<AddProduct>
 
   Widget build(BuildContext context){
     return Scaffold(
-      appBar:  AppBar(title:Text("Select Product Category")),
+      appBar:  AppBar(title:Text("Add Product")),
       body: BlocBuilder<ProductsBloc,ProductsState>(
         bloc: _productsBloc,
         builder: (context,state){
@@ -101,24 +98,23 @@ class AddProductSate extends State<AddProduct>
                   Navigator.push(context, MaterialPageRoute(builder: 
                   (_)=>TypeScreen(content[index].id,content[index].name)
                   )):Navigator.push(context, MaterialPageRoute(builder: 
-                  (_)=>
-                  CreateProductScreen(content[index].id)
-                  // ProductScreen()
-                  
-                  
+                  (_)=>CreateProductScreen(content[index].id)
                   ));
+                  
+                  
+                  
+                  
+
+                // state is LoadCateogry
+                // ? _productsBloc.add(OnSubCategory(content[index].id)):
+                // state is LoadSubCategory
+                // ? _productsBloc.add(OnProductType()):
+                // null;
               },
               child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Text(content[index].name,style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-                    SizedBox(width:20),
-                    Text("("+content[index].productSize.toString()+")",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold,color: Colors.grey),)
-                  ],
-                ),
-                
+                Text(content[index].name,style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
                 Row(
                   children: <Widget>[
                     // Icon(Icons),
@@ -134,6 +130,8 @@ class AddProductSate extends State<AddProduct>
             ),
           ),
         );
+
+
       }
       
       )
@@ -159,19 +157,15 @@ class SubCategoryScreen extends StatefulWidget{
 }
 class SubCategoryScreenState extends State<SubCategoryScreen>
 {
-
+  ProductRepository rep;
   ProductsBloc _productsBloc;
   void initState()
   {
     super.initState();
-    BlocProvider.of<ProductsBloc>(context).add(
-      // OnProductType(this.widget.id)
+    _productsBloc = ProductsBloc(rep);
+    _productsBloc.add(
       OnSubCategory(this.widget.id)
     );
-    // _productsBloc = ProductsBloc();
-    // _productsBloc.add(
-    //   OnSubCategory(this.widget.id)
-    // );
   }
   @override
   Widget build(BuildContext context){
@@ -195,7 +189,10 @@ class SubCategoryScreenState extends State<SubCategoryScreen>
           }
         },
       )
-    );  
+    
+    );
+
+  
   }
 }
 
@@ -212,17 +209,15 @@ class TypeScreenState extends State<TypeScreen>
 {
 
   ProductsBloc _productsBloc;
+  ProductRepository rep;
   void initState()
   {
 
     super.initState();
-    // _productsBloc = ProductsBloc();
-    BlocProvider.of<ProductsBloc>(context).add(
+    _productsBloc = ProductsBloc(rep);
+    _productsBloc.add(
       OnProductType(this.widget.id)
     );
-    // _productsBloc.add(
-    //   OnProductType(this.widget.id)
-    // );
   }
   @override
   Widget build(BuildContext context){
@@ -252,4 +247,3 @@ class TypeScreenState extends State<TypeScreen>
 
   }
 }
-

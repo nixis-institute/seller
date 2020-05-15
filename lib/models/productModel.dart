@@ -86,6 +86,7 @@ dynamic colorsPicker ={
 class Product{
   String id;
   String name;
+  String brand;
   double listPrice;
   double mrp;
   // List sizes;
@@ -96,11 +97,13 @@ class Product{
   List<String> colors;
   List<ProductImage> images;
   bool inStock;
+  bool isActive;
   int qty;
   int productSize;
   // String endcursor;
   // bool hasNext
-  Product(this.id,this.name,this.listPrice,this.mrp,this.imageLink,this.sizes,this.colors,this.productSize,{this.isInCart=false});
+  Product(this.id,this.brand, this.name,this.listPrice,this.imageLink,this.productSize,
+  {this.isInCart=false,this.mrp,this.sizes,this.colors,this.inStock,this.isActive});
 }
 
 class SubProductModel{
@@ -113,6 +116,13 @@ class SubProductModel{
 //   String id;
 //   String name;
 // }
+
+class CategoryName{
+  final String name;
+  final String id;
+  final String productSize;
+  CategoryName(this.id,this.name,{this.productSize});
+}
 
 class SubProduct{
   String id;

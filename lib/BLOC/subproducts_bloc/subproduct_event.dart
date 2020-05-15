@@ -15,6 +15,17 @@ class OnUpdateSubProductImages extends SubproductEvent{
   OnUpdateSubProductImages(this.product);
 }
 
+class PopNavigate extends SubproductEvent{}
+class OnAddSubProductColor extends SubproductEvent{
+  String id;
+  String size;
+  String color;
+  String qty;
+  String mrp;
+  String listPrice;  
+  OnAddSubProductColor(this.id,this.size,this.color,this.qty,this.mrp,this.listPrice);
+}
+
 class OnAddSubProduct extends SubproductEvent{
   String id;
   String size;

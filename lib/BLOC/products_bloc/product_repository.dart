@@ -13,6 +13,41 @@ class ProductRepository{
 
 
   GraphQLClient client = clientToQuery();
+
+  Future<bool> activatedProduct(id,isActivate) async{
+    QueryResult result = await client.query(
+        QueryOptions(
+          documentNode: gql(changeProductActivationQuery),
+          variables: {
+            "id":id,
+            "status":isActivate
+          }
+        )
+      );
+    if(!result.hasException){
+      bool d = result.data["activateProduct"]["success"];
+      return d;
+    }
+  }
+
+Future<bool> inStockProduct(id,isStock) async{
+    QueryResult result = await client.query(
+        QueryOptions(
+          documentNode: gql(changeProductStockStatusQuery),
+          variables: {
+            "id":id,
+            "status":isStock
+          }
+        )
+      );
+    if(!result.hasException){
+      bool d = result.data["stockStatusProduct"]["success"];
+      return d;
+    }
+  }
+
+
+
   Future<List<SubProductModel>> getSubProductByRepository(id) async{
       QueryResult result = await client.query(
         QueryOptions(

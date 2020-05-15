@@ -26,6 +26,18 @@ class SubproductBloc extends Bloc<SubproductEvent, SubproductState> {
     if(event is OnSubProducts){
       yield* _mapSubProductLoadedToState(event,currentState);
     }
+    if(event is OnAddSubProductColor){
+      if(currentState is LoadSubProduct){
+        final product = await repository.createProduct(event.id,event.size,event.color,event.qty,event.mrp,event.listPrice);
+
+        final List<SubProductModel> prd= 
+        (currentState as LoadSubProduct).products..map((p) {
+            return p.size == product.size?p.product.add(product.product[0]):p.product.map((e) =>  e).toList();
+        } ).toList();      
+        yield LoadSubProduct(products: prd,sizes: currentState.sizes);
+        // yield NavigationPop();
+      }
+    }
 
     if(event is OnAddSubProduct){
       if(currentState is LoadSubProduct){
@@ -54,7 +66,7 @@ class SubproductBloc extends Bloc<SubproductEvent, SubproductState> {
              return p.id == event.product.id?event.product:p;
            }).toList();
         } ).toList();
-      
+        // yield NavigationPop();
         yield LoadSubProduct(products: prd,sizes: currentState.sizes);
       }
     }

@@ -69,6 +69,25 @@ class UpdateSubProduct extends ProductsEvent{
     
 } 
 
+class MakeItInActive extends ProductsEvent{
+  Product product;
+  MakeItInActive(this.product);
+}
+
+class MakeItActive extends ProductsEvent{
+  Product product;
+  MakeItActive(this.product);
+}
+
+class MakeItOutOfStock extends ProductsEvent{
+  Product product;
+  MakeItOutOfStock(this.product);
+}
+class MakeItInStock extends ProductsEvent{
+  Product product;
+  MakeItInStock(this.product);
+}
+
 class OnSubProducts extends ProductsEvent{
   String id;
   OnSubProducts(this.id);

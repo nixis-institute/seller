@@ -72,6 +72,102 @@ mutation x(\$id:ID!,\$prdName:String!,\$brand:String!,\$shortDesc:String!,\$long
 }
 
 """;
+String searchByNameQuery ="""
+query x(\$match:String!){
+  searchResult(match:\$match)
+  {
+    id
+    name
+    brand
+    productimagesSet{
+      edges{
+        node{
+          id
+          thumbnailImage
+        }
+      }
+    }
+  }
+}
+
+""";
+
+String productBySublistIdQuery="""
+query x(\$id:ID!){
+  productBySublistId(sublistId:\$id){
+    edges{
+      node{
+        id
+        productSize
+        brand
+        name
+        productimagesSet{
+          edges{
+            node{
+              thumbnailImage
+            }
+          }
+        }
+      }
+    }
+  }
+}
+""";
+
+String searchByCategoryQuery = """
+query x(\$match:String!){
+  searchCategory(match:\$match){
+    name
+    id
+    productSize
+    subCategory{
+      name
+      mainCategory{
+        name
+      }
+    }
+  }
+}
+
+""";
+
+String searchByBrandQuery ="""
+query x(\$match:String!){
+  searchByBrand(match:\$match)
+  {
+    id
+    name
+    brand
+    productimagesSet{
+      edges{
+        node{
+          id
+          thumbnailImage
+        }
+      }
+    }
+  }
+}
+""";
+
+String changeProductStockStatusQuery ="""
+mutation x(\$id:ID!,\$status:Int!){
+  stockStatusProduct(id:\$id,instock:\$status)
+  {
+    success
+  }
+}
+""";
+
+String changeProductActivationQuery ="""
+mutation x(\$id:ID!,\$status:Int!){
+  activateProduct(id:\$id,activate:\$status)
+  {
+    success
+  }
+}
+
+""";
 
 String getAllProductsQuery ="""
 {
@@ -79,6 +175,7 @@ String getAllProductsQuery ="""
     edges{
       node{
         id
+        brand
         name
         listPrice
         productSize
@@ -86,6 +183,7 @@ String getAllProductsQuery ="""
         color
         mrp
         instock
+        isActive
         subproductSet{
           edges{
             node{
@@ -220,4 +318,12 @@ String getProductsQuery ="""
   }
 }
 
+""";
+
+String getTokenQuery ="""
+mutation x(\$username:String!,\$password:String!){
+  tokenAuth(username:\$username,password:\$password){
+    token
+  }
+}
 """;

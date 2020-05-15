@@ -25,6 +25,8 @@ class _SubProductScreen extends State<SubProductScreen>
   bool isSubmit = false;
   SubProduct dup;
   SubproductBloc _bloc;
+  bool isNew = false;
+  String _size;
   void initState()
   {
     super.initState();
@@ -74,34 +76,60 @@ class _SubProductScreen extends State<SubProductScreen>
     }
 
   }
+
   
-  void _showDialog(SubProduct product){
+  void _showDialog({SubProduct product = null}){
     // _productsBloc.add(
     //   OnAddVarient());
     // OnAddVarient
+    print("called");
+    
+    String _selectedColor;
+    List<String> _colors =[];
+    colorsPicker.forEach((key,value){
+      _colors.add(key);
+    });
     
     setState(() {
       dup = product as SubProduct;
     });
-    final _id = product.id;
+    final _id = product==null?this.widget.id:product.id;
     final _mrp = TextEditingController();
     final _list = TextEditingController();
     final _qty = TextEditingController();
     print(_id);
     setState(() {
-      _mrp.text = product.mrp.toString();
-      _list.text = product.listPrice.toString();
-      _qty.text = product.qty.toString();
+      _mrp.text = product==null?null:product.mrp.toString();
+      _list.text = product==null?null:product.listPrice.toString();
+      _qty.text = product==null?null:product.qty.toString();
     });
 
 
     showDialog<void>(
       context: context,
       builder: (BuildContext context){
-        return StatefulBuilder(
+        return 
+        BlocListener<SubproductBloc,SubproductState>(
+          listener: (context,state){
+            if(state is LoadSubProduct){
+              setState(() {
+                isSubmit = false;
+              });
+              Navigator.pop(context);
+            }
+          },
+          child: 
+          // builder: (context,state){
+          //   if(state is NavigationPop)
+
+          // },
+          
+          
+
+         StatefulBuilder(
           builder: (BuildContext context, StateSetter setState){
-            return         AlertDialog(
-          title:Text("Update"),
+          return AlertDialog(
+          title:isNew?Text("Add New Color"): Text("Update"),
           content: 
           isSubmit?
           Container(
@@ -132,7 +160,6 @@ class _SubProductScreen extends State<SubProductScreen>
                       ),
                   )
                  
-                  // Text(product.mrp.toString(),style: TextStyle(color:Colors.black,fontWeight: FontWeight.bold),)
                 ],
               ),
               SizedBox(height:10),
@@ -148,21 +175,6 @@ class _SubProductScreen extends State<SubProductScreen>
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       hintText: "List" ,
-                              // focusedBorder: OutlineInputBorder(
-                              //   borderSide: BorderSide(color: Colors.grey),
-                              //   borderRadius: BorderRadius.circular(25.7),
-                              // ),
-
-                              // enabledBorder: UnderlineInputBorder(
-                              //   borderSide: BorderSide(color: Colors.grey),
-                              //   borderRadius: BorderRadius.circular(25.7),
-                              // ),                        
-                      // contentPadding: const EdgeInsets.only(left: 5.0,top:0,bottom:0),
-                      // border: OutlineInputBorder(
-                      //   borderSide: BorderSide(
-                      //     width: 1
-                      //   )
-                      // )
                     ),
                       ),
                   )
@@ -177,70 +189,26 @@ class _SubProductScreen extends State<SubProductScreen>
                   Text("Qty"),
                     Row(
                       children: <Widget>[
-                      // InkWell(
-                      //     onTap: (){
-                            
-                      //       if( (int.parse(_qty.text)) >1){
-                      //         setState(() {
-                      //           _qty.text = (int.parse(_qty.text)-1).toString();
-                      //             dup.qty-=1;
-                      //         });
-                      //         // this.widget.callback(this.widget.total- dup[index].listPrice);
-                      //         }
-                      //     },
-                      //     child: Container(
-                      //     decoration: BoxDecoration(
-                      //       color: Colors.grey[200]
-                      //     ),
-                      //     child: Icon(Icons.remove,color: Colors.grey, )
-                      //     ),
-                      //   ),
-                        
-                        
-                        // SizedBox(width: 10,),
 
                         Center(
                           child: 
                           Container(
                             width: 70,
                             child: TextFormField(
+                              
                               keyboardType: TextInputType.number,
                               controller: _qty,
                               textAlign: TextAlign.center,
                               decoration: InputDecoration(
-                                
+                                hintText: "Qty"
                               ),
                               
                             ),
                           )
-                          // Text(_qty.text.toString(),
-                          // // style: TextStyle(fontWeight: FontWeight.bold,),
+
                           // ),
                         ),
                         
-                        // SizedBox(width: 10,),
-                        
-                      //   InkWell(
-                      //     onTap: (){
-                      //     if(int.parse(_qty.text)>0)
-                      //     {
-                      //       setState(() {
-                      //         _qty.text = (int.parse(_qty.text)+1).toString();
-                      //           // dup.qty+=1; 
-                      //         // this.widget.callback(this.widget.total+ product[index].listPrice);
-                      //       });
-                      //       }
-                      //     // this.widget.callback(this.widget.total+ product[index].listPrice);
-                          
-                      //     },
-                      //     child: Container(
-                      //     decoration: BoxDecoration(
-                      //       color: Colors.grey[200]
-                      //     ),
-                      //     child: Icon(Icons.add,color: Colors.grey, )
-                      //     ),
-                      // ),
-
 
                       ],
                     ),
@@ -248,23 +216,54 @@ class _SubProductScreen extends State<SubProductScreen>
                 
                 ],
               ),
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //   children: <Widget>[
-              //     Text("InStock"),
-              //     Text(product.inStock.toString())
-              //   ],
-              // ),
 
+              SizedBox(height:15),
+              isNew?
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text("Color"),
+                  DropdownButton(
+                    hint: Text("Select Color"),
+                    value: _colors.contains(_selectedColor)?_selectedColor:null,
+                      items: _colors.map((value) {
+                        return DropdownMenuItem<String>(
+                          value: value , //select value
+                          child: 
+                          
+                          Row(
+                            children: <Widget>[
+                              Container(
+                                  padding: EdgeInsets.all(3),
+                                  height: 20,
+                                  width: 20,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(width:0.2,color:Colors.grey),
+                                    color: Color(int.parse(value.toString().replaceAll("#", "0xff"))),
+                                    borderRadius: BorderRadius.circular(50)
+                                    ),
+                                // child:
+                                ),
 
+                              SizedBox(width: 10,),
+                              Text(colorsPicker[value],style: TextStyle(color: Colors.black,fontWeight: FontWeight.normal),),
+                            ],
+                          ),
+                        
+                        );
+                      }).toList(),
+                      onChanged: (_) {
+                        print(_);
+                      setState(() {
+                          _selectedColor = _;
+                      }); 
+                      },
+                    ),                  
+                ],
+              ):SizedBox()
 
             ],
           ),
-
-          // Text("Do you want to delete this address?"),
-      
-
-
 
           actions: <Widget>[
             !isSubmit?
@@ -273,18 +272,16 @@ class _SubProductScreen extends State<SubProductScreen>
                     setState(() {
                       isSubmit = true;
                     });
-                  // _deleteAddress(id,index);
+                isNew?
+                BlocProvider.of<SubproductBloc>(context).add(
+                  OnAddSubProductColor(this.widget.id,_size,_selectedColor,_qty.text,_mrp.text,_list.text)
+                )
+                :
                 _updateSubProduct(_id,_mrp.text,_list.text,_qty.text,product);
-                // _productsBloc.add(
-                //   UpdateSubProduct(
-                //     _id,_mrp.text,_list.text,_qty.text
-                //   )
-                // );
-
-
 
               },
-              child: Text("Update",style: TextStyle(color: Colors.green),)
+              child:isNew?Text("Add New"): Text("Update",style: TextStyle(color: Colors.green),)
+
               ):SizedBox(width:1),
 
 
@@ -297,7 +294,7 @@ class _SubProductScreen extends State<SubProductScreen>
 
         );
         },
-        );
+        ));
       }
     );
   }
@@ -375,6 +372,7 @@ class _SubProductScreen extends State<SubProductScreen>
                       child: Container(
                         // height: 100,
                         padding: EdgeInsets.all(10),
+                        // padding: EdgeInsets.only(top:20,bottom:15,left:10,right:10),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -410,7 +408,8 @@ class _SubProductScreen extends State<SubProductScreen>
 
                                             },
                                             child: Container(
-                                              padding: EdgeInsets.all(10),
+                                              padding: EdgeInsets.only(top:15,bottom:15,left:10,right:10),
+                                              // padding: EdgeInsets.all(10),
                                               // color: Colors.red,
                                               child: Row(
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -423,6 +422,8 @@ class _SubProductScreen extends State<SubProductScreen>
 
 
                                                 Row(
+                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                  // mainAxisAlignment: MainAxisAlignment.,
                                                   children: <Widget>[
                                                     Container(
                                                       padding: EdgeInsets.all(3),
@@ -438,10 +439,10 @@ class _SubProductScreen extends State<SubProductScreen>
                                                     SizedBox(width: 10,),
                                                       Text(
                                                       colorsPicker[products[i].product[j].color.toString()],
-                                                      style: TextStyle(color: Colors.black),
+                                                      style: TextStyle(color: Colors.black,fontSize: 18),
                                                     ),
                                                     SizedBox(width: 10,),
-                                                    Text("("+products[i].product[j].qty.toString()+")")
+                                                    Text("("+products[i].product[j].qty.toString()+")",style: TextStyle(fontSize: 17,color: Colors.grey),)
                                                     // SizedBox(width: 10,),
                                                     // Icon(Icons.add_circle_outline,color: Colors.grey,)
                                                   ],
@@ -456,7 +457,7 @@ class _SubProductScreen extends State<SubProductScreen>
                                                 Row(
                                                   children: <Widget>[
                                                     Text("\u20B9 "+ products[i].product[j].mrp.toString(),
-                                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                                    style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color: Colors.black),
                                                     ),
                                                   ],
                                                 ),
@@ -476,7 +477,20 @@ class _SubProductScreen extends State<SubProductScreen>
                                 
                                 Divider(height: 0,),
                                 SizedBox(height:15),
-                                Center(child: Text('Add Color',style: TextStyle(color: Colors.green),))
+                                Center(child: 
+                                  InkWell(
+                                    onTap: (){
+                                      setState(() {
+                                        _size = products[i].size;
+                                        isNew = true;
+                                      });
+                                      
+                                      // products[j];
+                                      _showDialog();
+                                    },
+                                    child: Text('Add Color',style: TextStyle(color: Colors.green),))
+                                  
+                                  )
 
 
 
@@ -535,8 +549,11 @@ class _SubProductScreen extends State<SubProductScreen>
                 title: Text("Edit"),
                 onTap: (){
                   // Navigation.pop
+                  setState(() {
+                    isNew = false;
+                  });
                   Navigator.pop(context);
-                  _showDialog(prd);
+                  _showDialog(product:prd);
                 },
               ),
               Divider(),

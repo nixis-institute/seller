@@ -5,6 +5,7 @@ import 'package:shopping_junction_seller/BLOC/products_bloc/products_bloc.dart';
 import 'package:shopping_junction_seller/Graphql/services.dart';
 import 'package:shopping_junction_seller/models/productModel.dart';
 import 'package:shopping_junction_seller/screens/ProductScreens/createProduct.dart';
+import 'package:shopping_junction_seller/screens/ProductScreens/searchPage.dart';
 import 'package:shopping_junction_seller/screens/ProductScreens/subProductList.dart';
 
 import '../AddProductScreen.dart';
@@ -38,7 +39,7 @@ class ProductScreenState extends State<ProductScreen> with TickerProviderStateMi
 
     int _currentIndex = 0;
     LoadProductsWithStatus p;
-    tabController = TabController(vsync:this, length: 2);
+    tabController = TabController(vsync:this, length: 3);
     // final state = (_productsBloc.state as LoadProductsWithStatus);
     // print(p);
     // tabController = TabController(vsync:this, length: state.products.length);
@@ -77,6 +78,83 @@ class ProductScreenState extends State<ProductScreen> with TickerProviderStateMi
 
 // }
 
+_showSheet(context, Product pd){
+  showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context){
+      return Container(
+        child: Wrap(
+          children: <Widget>[
+            ListTile(
+              leading: Icon(Icons.edit),
+              title: Text("Edit"),
+            ),
+
+
+            ListTile(
+              onTap: (){
+                // pd.inStock?
+                BlocProvider.of<ProductsBloc>(context).add(
+                  pd.isActive==false && pd.inStock == false ? MakeItOutOfStock(pd):
+                  pd.isActive==false && pd.inStock == true ?MakeItOutOfStock(pd):
+                  pd.isActive==false && pd.inStock==false?
+                  MakeItInStock(pd):MakeItInActive(pd)
+                );
+                Navigator.pop(context);
+              },
+              leading: Icon(
+                // pd.inStock?Icons.subdirectory_arrow_right:Icons.subdirectory_arrow_left
+                pd.isActive==false && pd.inStock ==false ?Icons.arrow_upward:
+                pd.isActive==false && pd.inStock == true?Icons.arrow_upward:
+                pd.isActive==false && pd.inStock==false?Icons.arrow_downward:Icons.arrow_forward
+                
+                ),
+                title: Text(
+                  pd.isActive==false && pd.inStock ==false ?"Out Of Stock":
+                pd.isActive==false && pd.inStock == true?"Out Of Stock":
+                pd.isActive==false && pd.inStock==false?"In Stock":"In Active"
+                
+                ),
+            ),
+
+            ListTile(
+              onTap: (){
+                // pd.inStock?
+                BlocProvider.of<ProductsBloc>(context).add(
+                  pd.isActive==true && pd.inStock == false ?MakeItInStock(pd):
+                  pd.isActive==true && pd.inStock==true?
+                  MakeItOutOfStock(pd):MakeItInStock(pd)
+                   
+                  // pd.inStock?
+                  // MakeItInActive(pd):MakeItInStock(pd)
+                );
+                Navigator.pop(context);
+              },
+              leading: Icon(
+                pd.isActive==true && pd.inStock == false ?Icons.arrow_downward:
+                pd.isActive==true && pd.inStock==true?Icons.arrow_upward:Icons.arrow_downward
+                // pd.inStock?Icons.subdirectory_arrow_right:Icons.subdirectory_arrow_left
+                
+                ),
+              title: Text(
+                pd.isActive==true && pd.inStock == false?"In Stock":
+                pd.isActive==true && pd.inStock==true?"Out of Stock":"InStock"
+                // pd.isActive?"InActive ":"InStock"
+                
+                ),
+            ),
+
+            // ListTile(
+            //   leading: Icon(Icons.edit),
+            //   title: Text("InActive"),
+            // ),            
+          ],
+        ),
+      );
+    }
+  );
+}
+
 
 
 
@@ -109,7 +187,7 @@ class ProductScreenState extends State<ProductScreen> with TickerProviderStateMi
         //   id = product[_currentIndex].id;
         // });
       });
-
+      // print("sdf-----------------------------------R"+state.products.length.toString());
          return 
 
          Scaffold(
@@ -159,7 +237,13 @@ class ProductScreenState extends State<ProductScreen> with TickerProviderStateMi
                     return <Widget>[
                       SliverAppBar(
                         actions: <Widget>[
-                          
+                          IconButton(icon: Icon(Icons.search,color: Colors.white,), 
+                            onPressed: ()=>Navigator.push(
+                              context, 
+                              MaterialPageRoute(builder: (_)=>SearchPage())
+                              )
+                            
+                          )
                         ],
 
                         snap: true,
@@ -198,48 +282,41 @@ class ProductScreenState extends State<ProductScreen> with TickerProviderStateMi
 
                     return  Container(
                       // color: Colors.green,
+                      color:Colors.white,
                       alignment: Alignment.topCenter,
                       child: 
                       
                       Column(
                         children: <Widget>[
-                          Container(
-                            color: Colors.white,
-                            padding: EdgeInsets.only(left:5,right:5,top:5),
-                            child: TextFormField(
-                              // focusNode: true
-                              onChanged: (value){
-                                // filterSearchResult(value);
-                              },
+                          // Container(
+                          //   color: Colors.white,
+                          //   padding: EdgeInsets.only(left:5,right:5,top:5),
+                          //   child: TextFormField(
+                          //     // focusNode: true
+                          //     onChanged: (value){
+                          //       // filterSearchResult(value);
+                          //     },
 
-                              autofocus: false,
-                              decoration: InputDecoration(
-                                filled: true,
+                          //     autofocus: false,
+                          //     decoration: InputDecoration(
+                          //       filled: true,
                                 
-                                prefixIcon: Icon(Icons.search),
-                                contentPadding: const EdgeInsets.only(left: 1.0,top:15,),
-                                fillColor: Colors.grey[100],
-                                hintText: "Search..",
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white),
-                                  borderRadius: BorderRadius.circular(25.7),
-                                ),
+                          //       prefixIcon: Icon(Icons.search),
+                          //       contentPadding: const EdgeInsets.only(left: 1.0,top:15,),
+                          //       fillColor: Colors.grey[100],
+                          //       hintText: "Search..",
+                          //       focusedBorder: OutlineInputBorder(
+                          //         borderSide: BorderSide(color: Colors.white),
+                          //         borderRadius: BorderRadius.circular(25.7),
+                          //       ),
 
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white),
-                                  borderRadius: BorderRadius.circular(25.7),
-                                ),                              
-
-                                // fillColor: Colors.accents,
-                                // border: InputBorder.none
-
-                              //   border: OutlineInputBorder(   
-                              //     // borderSide: BorderSide(width: 4,color: Colors.white),
-                              //   borderRadius: BorderRadius.all(Radius.circular(30))
-                              // )
-                              ),
-                            ),
-                          ),
+                          //       enabledBorder: UnderlineInputBorder(
+                          //         borderSide: BorderSide(color: Colors.white),
+                          //         borderRadius: BorderRadius.circular(25.7),
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
                           // Text("sdf"),
 
 
@@ -255,7 +332,7 @@ class ProductScreenState extends State<ProductScreen> with TickerProviderStateMi
                                 indent: 55,
                                 endIndent: 0,
                                 color: Colors.grey[400],
-                                height: 0,
+                                // height: 0,
                                 ),
                                 itemCount: _allproducts.length,
                                 itemBuilder:(BuildContext context,int i){
@@ -267,21 +344,29 @@ class ProductScreenState extends State<ProductScreen> with TickerProviderStateMi
                                   Product product =  _allproducts[i];
                                   return 
                                   Container(
+                                    // margin: EdgeInsets.only(top:10),
                                     color: Colors.white,
                                     child: ListTile(
                                       onTap: (){
                                         Navigator.push(context, 
                                           MaterialPageRoute(builder: (_)=>SubProductScreen(
-                                            product.id,product.name
+                                            product.id,product.name,
+                                            // product.imageLink
                                         )));
                                       },
-                                      trailing: Text(product.productSize.toString()),
+                                      // trailing: Text(product.productSize.toString()),
+                                      trailing: IconButton(
+                                        icon: Icon(Icons.more_horiz), 
+                                        onPressed: (){
+                                          _showSheet(context,product);
+                                        }
+                                        ),
+
                                       leading: CachedNetworkImage(
-                                        height: 40,
+                                        // height: 40,
                                         imageUrl:server_url+"/media/"+product.imageLink.toString() ),
-                                      title: Text(product.name,style: TextStyle(fontWeight: FontWeight.normal),),
-                                      // subtitle: Text(product. ),
-                                      // subtitle: Text(product.name),
+                                      title: Text(product.name,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17),),
+                                      subtitle: Text(product.brand),
                                     ),
                                   );
                    

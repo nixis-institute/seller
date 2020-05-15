@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:shopping_junction_seller/BLOC/login_bloc/login_bloc.dart';
+import 'package:shopping_junction_seller/BLOC/login_bloc/login_repository.dart';
 import 'package:shopping_junction_seller/BLOC/products_bloc/product_repository.dart';
 import 'package:shopping_junction_seller/BLOC/products_bloc/products_bloc.dart';
+import 'package:shopping_junction_seller/BLOC/search_bloc/search_bloc.dart';
+import 'package:shopping_junction_seller/BLOC/search_bloc/search_repository.dart';
 import 'package:shopping_junction_seller/BLOC/subproducts_bloc/subproduct_bloc.dart';
 import 'package:shopping_junction_seller/BLOC/subproducts_bloc/subproduct_repository.dart';
 import 'package:shopping_junction_seller/Graphql/services.dart';
@@ -10,6 +14,7 @@ import 'package:shopping_junction_seller/screens/ProductScreens/ImageUploadScree
 import 'package:shopping_junction_seller/screens/ProductScreens/createProduct.dart';
 import 'package:shopping_junction_seller/screens/ProductScreens/productList.dart';
 import 'package:shopping_junction_seller/screens/home.dart';
+import 'package:shopping_junction_seller/screens/login_screen.dart';
 // import 'package:shopping_junction_seller/screens/login.dart';
 
 // import 'BLOC/Bloc/Authentication_bloc.dart';
@@ -43,11 +48,12 @@ void main()
   // final userRepository = UserRepository();
   ProductRepository productRepository = ProductRepository();
   SubProductRepository subProductRepository = SubProductRepository();
+  LoginRepostory loginRepostory = LoginRepostory();
+  SearchRepository searchRepository = SearchRepository();
+  // AuthenticateBloc authenticateBloc = AuthenticateBloc(loginRepostory);
+
   // BlocSupervisor.delegate = SimpleBlocDelegate();
   runApp(
-    
-  
-    // MyApp()
       MultiBlocProvider(
         providers: [
           BlocProvider<ProductsBloc>(
@@ -55,50 +61,168 @@ void main()
           ),
           BlocProvider<SubproductBloc>(
             create: (context) => SubproductBloc(repository: subProductRepository),
+          ),
+          BlocProvider<LoginBloc>(
+            create: (context) => LoginBloc(repository:loginRepostory),
+          ),
+          
+          BlocProvider<SearchBloc>(
+            create: (context) => SearchBloc(repository:searchRepository),
+          ),
+
+          BlocProvider<AuthenticateBloc>(
+            create: (context) =>AuthenticateBloc(loginRepostory)..add(AppStarted()),
           )
         ],
-        child: MyApp(productRepository:productRepository,subProductRepository:subProductRepository),
-      )
+        // create: (context) => AuthenticateBloc(loginRepostory)..add(AppStarted()),
+        
+        
+        child: App(productRepository,subProductRepository,loginRepostory),
+        ),
+        
+        
+
+      // MultiBlocProvider(
+      //   providers: [
+      //     BlocProvider<ProductsBloc>(
+      //       create: (context) => ProductsBloc(productRepository),
+      //     ),
+      //     BlocProvider<SubproductBloc>(
+      //       create: (context) => SubproductBloc(repository: subProductRepository),
+      //     ),
+      //     BlocProvider<LoginBloc>(
+      //       create: (context) => LoginBloc(repository:loginRepostory),
+      //     )
+      //   ],
+      //   child: MyApp(productRepository:productRepository,subProductRepository:subProductRepository,loginRepostory:loginRepostory,),
+      // )
     
   );
 }
 
-class MyApp extends StatelessWidget{
+class App extends StatelessWidget{
   final ProductRepository productRepository;
   final SubProductRepository subProductRepository;
-  
-  MyApp({Key key, @required this.productRepository,this.subProductRepository})
-      : assert(productRepository != null,subProductRepository!=null),
-        super(key: key);
-  
+  final LoginRepostory loginRepostory;  
+  App(this.productRepository,this.subProductRepository,this.loginRepostory);
   @override
   Widget build(BuildContext context){
-    return BlocBuilder<ProductsBloc,ProductsState>(
-      builder: (context,state){
-        return MaterialApp(
-          title: 'Shopping Junction Seller',
-          theme: ThemeData(
-            primaryColor: Colors.teal
-          ),
-          
-          routes: <String,WidgetBuilder>{
-            '/home':(BuildContext context) => new HomeScreen(),
-            '/productList':(BuildContext context) => new ProductScreen(),
-            '/image':(BuildContext context) => new ImageScreen(),
-          },
-
-        home: BlocProvider(
-          create: (context)=>ProductsBloc(
-            productRepository
-          ),
-          child: HomeScreen(),
-        ),
-
-        );
-      },
+    return MaterialApp(
+      home: BlocBuilder<AuthenticateBloc,AuthenticateState>(
+        builder: (context,state){
+          if (state is Authenticated)
+          {
+            return HomeScreen();
+            // return MultiBlocProvider(
+            //   providers: [
+            //     BlocProvider<ProductsBloc>(
+            //       create: (context) => ProductsBloc(productRepository),
+            //     ),
+            //     BlocProvider<SubproductBloc>(
+            //       create: (context) => SubproductBloc(repository: subProductRepository),
+            //     ),
+            //   ], 
+            //   child: HomeScreen(),
+            //   // child: (productRepository:productRepository,subProductRepository:subProductRepository,loginRepostory:loginRepostory,)
+            // );
+          }
+          else{
+            return 
+            BlocProvider(
+              create: (context){
+                return LoginBloc(
+                  authenticateBloc: BlocProvider.of<AuthenticateBloc>(context),
+                  repository: loginRepostory
+                );
+              },
+              child: LoginScreen(),
+            ) ;
+          }
+        },
+      ),
+        routes: <String,WidgetBuilder>{
+      '/home':(BuildContext context) => new HomeScreen(),
+      '/productList':(BuildContext context) => new ProductScreen(),
+      '/image':(BuildContext context) => new ImageScreen(),
+        },
     );
   }
 }
+
+class Home extends StatelessWidget{
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: Center(child: Text("Home"),),
+    );
+  }
+}
+
+class LHome extends StatelessWidget{
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: Center(child: Text("Home"),),
+    );
+  }
+}
+
+// class MyApp extends StatelessWidget{
+//   final ProductRepository productRepository;
+//   final SubProductRepository subProductRepository;
+//   final LoginRepostory loginRepostory;
+  
+//   MyApp({Key key, @required this.productRepository,this.subProductRepository,this.loginRepostory})
+//       : assert(productRepository != null,subProductRepository!=null),
+//         super(key: key);
+  
+
+//   @override
+//   Widget build(BuildContext context){
+//     return BlocBuilder<LoginBloc,LoginState>(
+//       builder: (context,state){
+//         if(state is Authenticated){
+//             // return Text("Not");
+//           return MaterialApp(
+//             title: 'Shopping Junction Seller',
+//             theme: ThemeData(
+//               primaryColor: Colors.teal
+//             ),
+            
+//             routes: <String,WidgetBuilder>{
+//               '/home':(BuildContext context) => new HomeScreen(),
+//               '/productList':(BuildContext context) => new ProductScreen(),
+//               '/image':(BuildContext context) => new ImageScreen(),
+//             },
+
+//           home: BlocProvider(
+//             create: (context)=>ProductsBloc(
+//               productRepository
+//             ),
+//             child: HomeScreen(),
+//           ),
+
+//           );
+//         }
+//         else{
+//           return 
+//             MaterialApp(
+//               home: BlocProvider(create:(context)=> LoginBloc(
+//                 repository: loginRepostory,
+//                 authenticateBloc: BlocProvider.of<AuthenticateBloc>(context)
+//               ),
+//               child: LoginScreen(),
+//               ),
+//             );
+//           // Center(child: Text("Login"),);
+
+//         }
+
+
+//       },
+//     );
+//   }
+// }
 
 // class MyApp extends StatelessWidget {
 

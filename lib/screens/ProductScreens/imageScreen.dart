@@ -84,11 +84,14 @@ class ImageScreen_ extends State<ImageScreen>{
     response = await dio.post(
       "$server_url/api/subproduct/",
       data: await ImageForm(),
+      onSendProgress: (send,total){
+        print("$send from $total");
+      }
     );
 
-    print(response);
-    print(response.data);
-    print(response.data["id"] );
+    // print(response);
+    // print(response.data);
+    // print(response.data["id"] );
     
     String relative_url = response.data["large_image"].replaceAll(server_url+"/media/","");
 
